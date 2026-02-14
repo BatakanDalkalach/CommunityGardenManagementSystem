@@ -65,6 +65,8 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
+// Default controller route with static assets
+// Основен маршрут на контролера със статични ресурси
 
 
 app.Run();
