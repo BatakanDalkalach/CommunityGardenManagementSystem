@@ -30,6 +30,7 @@ builder.Services.AddDbContext<CommunityGardenDatabase>(options =>
 });
 
 // Register application services
+// Регистриране на услуги на приложението
 builder.Services.AddScoped<PlotManagementService>();
 builder.Services.AddScoped<MemberManagementService>();
 
