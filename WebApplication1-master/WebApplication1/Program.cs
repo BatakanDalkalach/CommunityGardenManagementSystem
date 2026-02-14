@@ -20,8 +20,8 @@ builder.Services.AddDbContext<CommunityGardenDatabase>(options =>
     if (connectionString.Contains("localdb") || connectionString.Contains("sqlexpress", StringComparison.OrdinalIgnoreCase))
     {
         options.UseSqlServer(connectionString);
-        // Using SQLite for all other cases
-        // Използване на SQLite за всички други случаи
+        // Using SQLite for all other cases.
+        // Използване на SQLite за всички други случаи.
     }
     else
     {
@@ -30,7 +30,7 @@ builder.Services.AddDbContext<CommunityGardenDatabase>(options =>
 });
 
 // Register application services
-// Регистриране на услуги на приложението
+// Регистриране на услуги на приложението.
 builder.Services.AddScoped<PlotManagementService>();
 builder.Services.AddScoped<MemberManagementService>();
 
@@ -42,11 +42,16 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    // Използване на персонализирана страница за грешки в продукция.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
+// Redirect HTTP requests to HTTPS
+// Пренасочване на HTTP заявки към HTTPS
 app.UseRouting();
+// Enable routing
+// Активиране на маршрутизация
 
 app.UseAuthorization();
 
