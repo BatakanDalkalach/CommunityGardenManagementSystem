@@ -14,6 +14,7 @@ var connectionString = builder.Configuration.GetConnectionString("GardenDbConnec
     ?? "Data Source=CommunityGarden.db";
 
 // Use SQLite for better compatibility (or SQL Server if LocalDB is available)
+// Използване на SQLite за по-добра съвместимост (или SQL Server, ако LocalDB е наличен)
 builder.Services.AddDbContext<CommunityGardenDatabase>(options =>
 {
     if (connectionString.Contains("localdb") || connectionString.Contains("sqlexpress", StringComparison.OrdinalIgnoreCase))
