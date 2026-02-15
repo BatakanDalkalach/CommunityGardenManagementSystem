@@ -20,6 +20,8 @@ namespace WebApplication1.Models
         [Required]
         public int MemberId { get; set; }
 
+        // EN: Foreign key referencing the member who harvested.
+        // BG: Външен ключ към члена, който е събрал реколтата.
         [ForeignKey(nameof(MemberId))]
         public virtual GardenMember? Harvester { get; set; }
 
