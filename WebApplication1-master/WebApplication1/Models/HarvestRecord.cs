@@ -24,7 +24,11 @@ namespace WebApplication1.Models
         // BG: Външен ключ към члена, който е събрал реколтата.
         [ForeignKey(nameof(MemberId))]
         public virtual GardenMember? Harvester { get; set; }
-
+        
+        // EN: Name of the harvested crop or vegetable.
+        // Must be between 2 and 60 characters.
+        // BG: Име на събраната култура или зеленчук.
+        // Трябва да бъде между 2 и 60 символа.
         [Required(ErrorMessage = "Crop name is required")]
         [StringLength(60, MinimumLength = 2)]
         [Display(Name = "Crop/Vegetable Name")]
