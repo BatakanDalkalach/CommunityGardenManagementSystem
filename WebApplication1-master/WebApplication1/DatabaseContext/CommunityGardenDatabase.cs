@@ -20,7 +20,8 @@ namespace WebApplication1.DatabaseContext
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-
+            // EN: Defines primary key and unique index to ensure each plot has a unique identifier and designation.
+            // BG: Дефинира първичен ключ и уникален индекс, за да гарантира уникален идентификатор и обозначение на всеки парцел.
             builder.Entity<GardenPlot>(plot =>
             {
                 plot.HasKey(p => p.PlotIdentifier);
