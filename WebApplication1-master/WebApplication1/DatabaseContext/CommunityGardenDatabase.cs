@@ -3,6 +3,8 @@ using WebApplication1.Models;
 
 namespace WebApplication1.DatabaseContext
 {
+    // This class represents the database context and manages entity-to-database mapping.
+    // Този клас представлява контекста на базата данни и управлява връзката между обектите и таблиците.
     public class CommunityGardenDatabase : DbContext
     {
         public CommunityGardenDatabase(DbContextOptions<CommunityGardenDatabase> configuration) 
