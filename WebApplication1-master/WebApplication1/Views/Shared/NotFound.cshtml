@@ -1,0 +1,153 @@
+@{
+    ViewData["Title"] = "Page Not Found";
+    Layout = "_Layout";
+}
+
+<style>
+    .error-page-wrapper {
+        min-height: 60vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 1rem;
+    }
+
+    .error-card {
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.10);
+        max-width: 580px;
+        width: 100%;
+        overflow: hidden;
+        border: 1px solid #e2e8f0;
+    }
+
+    .error-card-header {
+        background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+        padding: 2.5rem 2rem 2rem;
+        text-align: center;
+        color: #ffffff;
+    }
+
+    .error-code {
+        font-size: 5rem;
+        font-weight: 800;
+        line-height: 1;
+        letter-spacing: -2px;
+        color: rgba(255, 255, 255, 0.95);
+        text-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    .error-icon {
+        font-size: 3.5rem;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .error-card-body {
+        padding: 2rem 2.5rem 2.5rem;
+        text-align: center;
+    }
+
+    .error-title {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 0.75rem;
+    }
+
+    .error-description {
+        color: #64748b;
+        font-size: 1rem;
+        line-height: 1.6;
+        margin-bottom: 1.75rem;
+    }
+
+    .error-actions {
+        display: flex;
+        gap: 0.75rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .btn-home {
+        background: linear-gradient(135deg, #16a34a, #15803d);
+        color: #fff;
+        border: none;
+        padding: 0.65rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        text-decoration: none;
+        transition: opacity 0.2s, transform 0.1s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .btn-home:hover {
+        color: #fff;
+        opacity: 0.9;
+        transform: translateY(-1px);
+    }
+
+    .btn-back {
+        background: transparent;
+        color: #0ea5e9;
+        border: 2px solid #0ea5e9;
+        padding: 0.65rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        text-decoration: none;
+        transition: background 0.2s, color 0.2s, transform 0.1s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .btn-back:hover {
+        background: #0ea5e9;
+        color: #fff;
+        transform: translateY(-1px);
+    }
+
+    .error-divider {
+        border: none;
+        border-top: 1px solid #e2e8f0;
+        margin: 1.5rem 0;
+    }
+
+    .error-hint {
+        font-size: 0.85rem;
+        color: #94a3b8;
+    }
+</style>
+
+<div class="error-page-wrapper">
+    <div class="error-card">
+        <div class="error-card-header">
+            <span class="error-icon">🌱</span>
+            <div class="error-code">404</div>
+        </div>
+        <div class="error-card-body">
+            <h1 class="error-title">Plot Not Found</h1>
+            <p class="error-description">
+                Looks like this plot doesn't exist in our garden! The page you're looking for
+                may have been moved, removed, or the address might be incorrect.
+            </p>
+            <div class="error-actions">
+                <a asp-controller="Home" asp-action="Index" class="btn-home">
+                    🌿 Back to Dashboard
+                </a>
+                <a href="javascript:history.back()" class="btn-back">
+                    ← Go Back
+                </a>
+            </div>
+            <hr class="error-divider" />
+            <p class="error-hint">
+                If you believe this is a mistake, please contact your garden administrator.
+            </p>
+        </div>
+    </div>
+</div>

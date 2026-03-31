@@ -121,11 +121,22 @@ using (var scope = app.Services.CreateScope())
 // Настройка HTTP заявките
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
+    // Use custom 500 error page for unhandled exceptions in production
+    // Използване на персонализирана страница за грешки 500 в продукция
+    app.UseExceptionHandler("/Error/500");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    // Използване на персонализирана страница за грешки в продукция.
     app.UseHsts();
 }
+else
+{
+    // Use custom error page in development too (developer exception page still applies for unhandled exceptions)
+    // Използване на персонализирана страница за грешки и в режим на разработка
+    app.UseExceptionHandler("/Error/500");
+}
+
+// Redirect status code responses (404, 403, etc.) to custom error pages
+// Пренасочване на отговори с код на грешка към персонализирани страници
+app.UseStatusCodePagesWithReExecute("/Error/{0}");
 
 app.UseHttpsRedirection();
 // Redirect HTTP requests to HTTPS
