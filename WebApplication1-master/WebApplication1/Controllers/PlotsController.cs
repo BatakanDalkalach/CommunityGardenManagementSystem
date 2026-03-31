@@ -19,9 +19,28 @@ namespace WebApplication1.Controllers
             _ctx = ctx;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? search = null, string? soilType = null, int page = 1)
         {
-            return View(await _svc.RetrieveAllPlotsAsync());
+            const int pageSize = 6;
+            var allPlots = await _svc.RetrieveAllPlotsAsync();
+
+            if (!string.IsNullOrWhiteSpace(search))
+                allPlots = allPlots.Where(p => p.PlotDesignation.Contains(search, StringComparison.OrdinalIgnoreCase)).ToList();
+            if (!string.IsNullOrWhiteSpace(soilType))
+                allPlots = allPlots.Where(p => p.SoilType.Contains(soilType, StringComparison.OrdinalIgnoreCase)).ToList();
+
+            var totalPages = (int)Math.Ceiling(allPlots.Count / (double)pageSize);
+            page = Math.Max(1, Math.Min(page, Math.Max(1, totalPages)));
+
+            ViewBag.TotalCount = allPlots.Count;
+            ViewBag.FreeCount = allPlots.Count(p => !p.IsOccupied);
+            ViewBag.OccupiedCount = allPlots.Count(p => p.IsOccupied);
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.SearchDesignation = search;
+            ViewBag.SearchSoilType = soilType;
+
+            return View(allPlots.Skip((page - 1) * pageSize).Take(pageSize).ToList());
         }
 
         public async Task<IActionResult> ViewDetails(int? id)

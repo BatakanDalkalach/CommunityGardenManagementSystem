@@ -1,8 +1,6 @@
 @model IEnumerable<WebApplication1.Models.GardenPlot>
 @{
     ViewData["Title"] = "Garden Plots Gallery";
-    var freeCount = Model.Where(x => !x.IsOccupied).Count();
-    var takenCount = Model.Count() - freeCount;
 }
 
 <article class="cgms-plots-wrapper">
@@ -39,6 +37,13 @@
         .cgms-add-button { background: #10b981; color: white; padding: 0.9rem 2.2rem; border-radius: 0.7rem; text-decoration: none; font-weight: 700; }
         .cgms-add-button:hover { background: #059669; color: white; }
         .cgms-empty-state { background: white; padding: 4rem 2rem; border-radius: 1rem; text-align: center; }
+        .cgms-search-panel { background: white; padding: 1.5rem 1.8rem; border-radius: 0.8rem; margin-bottom: 2rem; box-shadow: 0 3px 12px rgba(0,0,0,0.08); }
+        .cgms-search-panel .form-label { font-weight: 600; color: #374151; margin-bottom: 0.3rem; }
+        .cgms-pagination { display: flex; justify-content: center; gap: 0.4rem; margin-top: 2.5rem; flex-wrap: wrap; }
+        .cgms-page-link { padding: 0.55rem 1rem; border-radius: 0.5rem; border: 2px solid #e5e7eb; background: white; color: #374151; text-decoration: none; font-weight: 700; font-size: 0.95rem; }
+        .cgms-page-link:hover { border-color: hsl(var(--primary-hue), 70%, 50%); color: hsl(var(--primary-hue), 70%, 50%); }
+        .cgms-page-link.active { background: hsl(var(--primary-hue), 70%, 50%); border-color: hsl(var(--primary-hue), 70%, 50%); color: white; }
+        .cgms-page-link.disabled { opacity: 0.45; pointer-events: none; }
     </style>
 
     <div class="container">
@@ -59,15 +64,15 @@
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
                 <div class="cgms-metrics">
                     <div class="cgms-metric-item">
-                        <span class="cgms-metric-num">@Model.Count()</span>
+                        <span class="cgms-metric-num">@ViewBag.TotalCount</span>
                         <span class="cgms-metric-txt">Total</span>
                     </div>
                     <div class="cgms-metric-item">
-                        <span class="cgms-metric-num">@freeCount</span>
+                        <span class="cgms-metric-num">@ViewBag.FreeCount</span>
                         <span class="cgms-metric-txt">Free</span>
                     </div>
                     <div class="cgms-metric-item">
-                        <span class="cgms-metric-num">@takenCount</span>
+                        <span class="cgms-metric-num">@ViewBag.OccupiedCount</span>
                         <span class="cgms-metric-txt">Occupied</span>
                     </div>
                 </div>
@@ -75,18 +80,47 @@
             </div>
         </section>
 
+        <section class="cgms-search-panel">
+            <form method="get" asp-action="Index">
+                <div class="row g-2 align-items-end">
+                    <div class="col-sm-4">
+                        <label class="form-label">Plot Designation</label>
+                        <input type="text" name="search" class="form-control" placeholder="e.g. A001" value="@ViewBag.SearchDesignation" />
+                    </div>
+                    <div class="col-sm-4">
+                        <label class="form-label">Soil Type</label>
+                        <input type="text" name="soilType" class="form-control" placeholder="e.g. Loamy" value="@ViewBag.SearchSoilType" />
+                    </div>
+                    <div class="col-sm-2">
+                        <button type="submit" class="btn btn-primary w-100">Search</button>
+                    </div>
+                    <div class="col-sm-2">
+                        <a href="@Url.Action("Index")" class="btn btn-outline-secondary w-100">Clear</a>
+                    </div>
+                </div>
+            </form>
+        </section>
+
         @if (!Model.Any())
         {
             <section class="cgms-empty-state">
-                <h3>No garden plots exist</h3>
-                <p>Start by creating your first plot</p>
-                <a asp-action="AddNew" class="btn btn-primary mt-3">Create First Plot</a>
+                @if (ViewBag.SearchDesignation != null || ViewBag.SearchSoilType != null)
+                {
+                    <h3>No plots match your search</h3>
+                    <p>Try different search terms or <a href="@Url.Action("Index")">clear filters</a></p>
+                }
+                else
+                {
+                    <h3>No garden plots exist</h3>
+                    <p>Start by creating your first plot</p>
+                    <a asp-action="AddNew" class="btn btn-primary mt-3">Create First Plot</a>
+                }
             </section>
         }
         else
         {
             <section class="cgms-plots-grid">
-                @foreach (var plotItem in Model.OrderBy(p => p.PlotDesignation))
+                @foreach (var plotItem in Model)
                 {
                     <article class="cgms-plot-tile">
                         <header class="cgms-tile-header @(plotItem.IsOccupied ? "taken" : "free")">
@@ -129,6 +163,21 @@
                     </article>
                 }
             </section>
+
+            @if ((int)ViewBag.TotalPages > 1)
+            {
+                <nav class="cgms-pagination" aria-label="Plots pagination">
+                    <a class="cgms-page-link @(ViewBag.CurrentPage == 1 ? "disabled" : "")"
+                       href="@Url.Action("Index", new { search = ViewBag.SearchDesignation, soilType = ViewBag.SearchSoilType, page = (int)ViewBag.CurrentPage - 1 })">&laquo;</a>
+                    @for (int i = 1; i <= (int)ViewBag.TotalPages; i++)
+                    {
+                        <a class="cgms-page-link @(i == (int)ViewBag.CurrentPage ? "active" : "")"
+                           href="@Url.Action("Index", new { search = ViewBag.SearchDesignation, soilType = ViewBag.SearchSoilType, page = i })">@i</a>
+                    }
+                    <a class="cgms-page-link @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")"
+                       href="@Url.Action("Index", new { search = ViewBag.SearchDesignation, soilType = ViewBag.SearchSoilType, page = (int)ViewBag.CurrentPage + 1 })">&raquo;</a>
+                </nav>
+            }
         }
     </div>
 </article>

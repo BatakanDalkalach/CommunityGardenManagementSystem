@@ -14,14 +14,23 @@ namespace WebApplication1.Controllers
             _svc = svc;
         }
 
-        public async Task<IActionResult> Index(string? tier = null)
+        public async Task<IActionResult> Index(string? tier = null, int page = 1)
         {
-            var members = string.IsNullOrEmpty(tier) 
+            const int pageSize = 6;
+            var allMembers = string.IsNullOrEmpty(tier)
                 ? await _svc.RetrieveAllMembersAsync()
                 : await _svc.SearchByMembershipTypeAsync(tier);
-            
+
+            var totalPages = (int)Math.Ceiling(allMembers.Count / (double)pageSize);
+            page = Math.Max(1, Math.Min(page, Math.Max(1, totalPages)));
+
             ViewBag.SelectedTier = tier;
-            return View(members);
+            ViewBag.TotalCount = allMembers.Count;
+            ViewBag.OrganicCount = allMembers.Count(m => m.PreferOrganicOnly);
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
+
+            return View(allMembers.Skip((page - 1) * pageSize).Take(pageSize).ToList());
         }
 
         public async Task<IActionResult> ViewProfile(int? id)

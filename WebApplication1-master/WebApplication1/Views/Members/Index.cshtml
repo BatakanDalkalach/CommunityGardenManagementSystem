@@ -1,7 +1,6 @@
 @model IEnumerable<WebApplication1.Models.GardenMember>
 @{
     ViewData["Title"] = "Community Members";
-    var organicMembers = Model.Count(m => m.PreferOrganicOnly);
 }
 
 <article class="cgms-members-page">
@@ -43,6 +42,11 @@
         .cgms-profile-btn { display: block; width: 100%; padding: 1rem; background: linear-gradient(135deg, #7c3aed, #6d28d9); color: white; text-align: center; text-decoration: none; font-weight: 800; border-radius: 0.8rem; }
         .cgms-profile-btn:hover { background: linear-gradient(135deg, #6d28d9, #5b21b6); color: white; }
         .cgms-empty { background: white; padding: 4rem 2rem; border-radius: 1.2rem; text-align: center; }
+        .cgms-pagination { display: flex; justify-content: center; gap: 0.4rem; margin-top: 2.5rem; flex-wrap: wrap; }
+        .cgms-page-link { padding: 0.55rem 1rem; border-radius: 0.5rem; border: 2px solid #e5e7eb; background: white; color: #374151; text-decoration: none; font-weight: 700; font-size: 0.95rem; }
+        .cgms-page-link:hover { border-color: #06b6d4; color: #06b6d4; }
+        .cgms-page-link.active { background: #06b6d4; border-color: #06b6d4; color: white; }
+        .cgms-page-link.disabled { opacity: 0.45; pointer-events: none; }
     </style>
 
     <div class="container">
@@ -51,11 +55,11 @@
             <p style="margin: 0;">Connect with fellow gardeners</p>
             <div class="cgms-banner-stats">
                 <div class="cgms-stat-box">
-                    <span class="cgms-stat-value">@Model.Count()</span>
+                    <span class="cgms-stat-value">@ViewBag.TotalCount</span>
                     <span>Members</span>
                 </div>
                 <div class="cgms-stat-box">
-                    <span class="cgms-stat-value">@organicMembers</span>
+                    <span class="cgms-stat-value">@ViewBag.OrganicCount</span>
                     <span>Organic</span>
                 </div>
             </div>
@@ -90,7 +94,7 @@
         else
         {
             <section class="cgms-members-grid">
-                @foreach (var mem in Model.OrderBy(m => m.FullLegalName))
+                @foreach (var mem in Model)
                 {
                     <article class="cgms-member-card">
                         <header class="cgms-card-top @mem.MembershipTier.ToLower()">
@@ -149,6 +153,21 @@
                     </article>
                 }
             </section>
+
+            @if ((int)ViewBag.TotalPages > 1)
+            {
+                <nav class="cgms-pagination" aria-label="Members pagination">
+                    <a class="cgms-page-link @(ViewBag.CurrentPage == 1 ? "disabled" : "")"
+                       href="@Url.Action("Index", new { tier = ViewBag.SelectedTier, page = (int)ViewBag.CurrentPage - 1 })">&laquo;</a>
+                    @for (int i = 1; i <= (int)ViewBag.TotalPages; i++)
+                    {
+                        <a class="cgms-page-link @(i == (int)ViewBag.CurrentPage ? "active" : "")"
+                           href="@Url.Action("Index", new { tier = ViewBag.SelectedTier, page = i })">@i</a>
+                    }
+                    <a class="cgms-page-link @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")"
+                       href="@Url.Action("Index", new { tier = ViewBag.SelectedTier, page = (int)ViewBag.CurrentPage + 1 })">&raquo;</a>
+                </nav>
+            }
         }
     </div>
 </article>
