@@ -1,0 +1,122 @@
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<!-- Stats cards -->
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-lg-3">
+        <div class="card text-white bg-success shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="fs-2 fw-bold">@ViewBag.TotalPlots</div>
+                        <div class="small">Total Plots</div>
+                    </div>
+                    <div class="fs-1 opacity-50">🌱</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <div class="card text-white bg-primary shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="fs-2 fw-bold">@ViewBag.OccupiedPlots</div>
+                        <div class="small">Occupied Plots</div>
+                    </div>
+                    <div class="fs-1 opacity-50">🏡</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <div class="card text-white bg-warning shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="fs-2 fw-bold">@ViewBag.TotalMembers</div>
+                        <div class="small">Garden Members</div>
+                    </div>
+                    <div class="fs-1 opacity-50">👥</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <div class="card text-white bg-info shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="fs-2 fw-bold">@ViewBag.TotalUsers</div>
+                        <div class="small">System Users</div>
+                    </div>
+                    <div class="fs-1 opacity-50">🔐</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <!-- Recent Members -->
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white fw-semibold">Recent Garden Members</div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Name</th>
+                            <th>Tier</th>
+                            <th>Joined</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var m in ViewBag.RecentMembers)
+                        {
+                            <tr>
+                                <td>@m.FullLegalName</td>
+                                <td><span class="badge bg-secondary">@m.MembershipTier</span></td>
+                                <td class="text-muted small">@m.RegistrationDate.ToString("MMM d, yyyy")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer text-end">
+                <a asp-area="" asp-controller="Members" asp-action="Index" class="btn btn-sm btn-outline-success">View All</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Harvests -->
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white fw-semibold">Recent Harvests</div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Crop</th>
+                            <th>Plot</th>
+                            <th>Kg</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var h in ViewBag.RecentHarvests)
+                        {
+                            <tr>
+                                <td>@h.CropName</td>
+                                <td>@h.SourcePlot?.PlotDesignation</td>
+                                <td>@h.QuantityKilograms</td>
+                                <td class="text-muted small">@h.CollectionDate.ToString("MMM d")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

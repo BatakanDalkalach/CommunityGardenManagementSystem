@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -31,12 +32,16 @@ namespace WebApplication1.Controllers
             return entity == null ? NotFound() : View(entity);
         }
 
+        // Require login to add, modify, or remove plots
+        // Изисква вход за добавяне, промяна или премахване на парцели
+        [Authorize]
         public IActionResult AddNew()
         {
             LoadMemberOptions();
             return View();
         }
 
+        [Authorize]
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> AddNew(GardenPlot entity)
         {
@@ -51,6 +56,7 @@ namespace WebApplication1.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Authorize]
         public async Task<IActionResult> Modify(int? id)
         {
             if (!id.HasValue) return NotFound();
@@ -62,6 +68,7 @@ namespace WebApplication1.Controllers
             return View(entity);
         }
 
+        [Authorize]
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> Modify(int id, GardenPlot entity)
         {
@@ -86,6 +93,7 @@ namespace WebApplication1.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Authorize]
         public async Task<IActionResult> Remove(int? id)
         {
             if (!id.HasValue) return NotFound();
@@ -94,6 +102,7 @@ namespace WebApplication1.Controllers
             return entity == null ? NotFound() : View(entity);
         }
 
+        [Authorize]
         [HttpPost, ActionName("Remove"), ValidateAntiForgeryToken]
         public async Task<IActionResult> ConfirmRemoval(int id)
         {

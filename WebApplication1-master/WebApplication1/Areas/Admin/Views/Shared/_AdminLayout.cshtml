@@ -1,0 +1,80 @@
+@inject Microsoft.AspNetCore.Identity.SignInManager<WebApplication1.Models.ApplicationUser> SignInManager
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Admin Panel</title>
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <style>
+        body { background-color: #f4f6f9; }
+        .admin-sidebar { min-height: 100vh; background: #1e3a2f; color: #fff; }
+        .admin-sidebar .nav-link { color: #c8e6c9; }
+        .admin-sidebar .nav-link:hover, .admin-sidebar .nav-link.active { color: #fff; background: #2d5a40; border-radius: 6px; }
+        .admin-sidebar .brand { font-size: 1.1rem; font-weight: 700; color: #a5d6a7; }
+        .admin-content { padding: 2rem; }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-2 d-none d-md-block admin-sidebar py-4 px-3">
+                <div class="brand mb-4 ps-2">🌿 Admin Panel</div>
+                <ul class="nav flex-column gap-1">
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="Admin" asp-controller="Dashboard" asp-action="Users">
+                            System Users
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="" asp-controller="Plots" asp-action="Index">
+                            Garden Plots
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="" asp-controller="Members" asp-action="Index">
+                            Members
+                        </a>
+                    </li>
+                    <hr class="border-secondary" />
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">
+                            ← Main Site
+                        </a>
+                    </li>
+                    @if (SignInManager.IsSignedIn(User))
+                    {
+                        <li class="nav-item mt-2">
+                            <form asp-area="" asp-controller="Account" asp-action="Logout" method="post">
+                                <button type="submit" class="btn btn-sm btn-outline-light w-100">Logout</button>
+                            </form>
+                        </li>
+                    }
+                </ul>
+            </nav>
+
+            <!-- Main content -->
+            <main class="col-md-10 admin-content">
+                <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+                    <h5 class="text-muted mb-0">@ViewData["Title"]</h5>
+                    <span class="badge bg-danger">Admin</span>
+                </div>
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

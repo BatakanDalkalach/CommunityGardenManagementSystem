@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApplication1.Models;
 using WebApplication1.Services;
@@ -31,12 +32,16 @@ namespace WebApplication1.Controllers
             return member == null ? NotFound() : View(member);
         }
 
+        // Require login to register a new garden member
+        // Изисква вход за регистриране на нов член на градината
+        [Authorize]
         public IActionResult Register()
         {
             ViewBag.TierOptions = new[] { "Basic", "Standard", "Premium" };
             return View();
         }
 
+        [Authorize]
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(GardenMember member)
         {

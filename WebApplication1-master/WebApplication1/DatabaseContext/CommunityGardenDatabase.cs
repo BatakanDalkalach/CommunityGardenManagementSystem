@@ -1,13 +1,16 @@
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using WebApplication1.Models;
 
 namespace WebApplication1.DatabaseContext
 {
     // This class represents the database context and manages entity-to-database mapping.
+    // Extends IdentityDbContext to include ASP.NET Core Identity tables.
     // Този клас представлява контекста на базата данни и управлява връзката между обектите и таблиците.
-    public class CommunityGardenDatabase : DbContext
+    // Разширява IdentityDbContext, за да включи таблиците на ASP.NET Core Identity.
+    public class CommunityGardenDatabase : IdentityDbContext<ApplicationUser>
     {
-        public CommunityGardenDatabase(DbContextOptions<CommunityGardenDatabase> configuration) 
+        public CommunityGardenDatabase(DbContextOptions<CommunityGardenDatabase> configuration)
             : base(configuration)
         {
         }

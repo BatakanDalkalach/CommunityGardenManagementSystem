@@ -1,5 +1,7 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using WebApplication1.DatabaseContext;
+using WebApplication1.Models;
 using WebApplication1.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,7 +12,7 @@ builder.Services.AddControllersWithViews();
 
 // Configure database with connection string
 // Конфигуриране на базата данни с низ за връзка
-var connectionString = builder.Configuration.GetConnectionString("GardenDbConnection") 
+var connectionString = builder.Configuration.GetConnectionString("GardenDbConnection")
     ?? "Data Source=CommunityGarden.db";
 
 // Use SQLite for better compatibility (or SQL Server if LocalDB is available)
@@ -29,12 +31,91 @@ builder.Services.AddDbContext<CommunityGardenDatabase>(options =>
     }
 });
 
+// Configure ASP.NET Core Identity with ApplicationUser and IdentityRole
+// Конфигуриране на ASP.NET Core Identity с ApplicationUser и IdentityRole
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+    {
+        // Password policy settings
+        // Настройки на паролната политика
+        options.Password.RequireDigit = true;
+        options.Password.RequireLowercase = true;
+        options.Password.RequireUppercase = true;
+        options.Password.RequireNonAlphanumeric = false;
+        options.Password.RequiredLength = 6;
+
+        // User settings
+        // Настройки на потребителя
+        options.User.RequireUniqueEmail = true;
+    })
+    .AddEntityFrameworkStores<CommunityGardenDatabase>()
+    .AddDefaultTokenProviders();
+
+// Configure the login/logout cookie paths
+// Конфигуриране на пътищата на бисквитките за вход/изход
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Account/Login";
+    options.LogoutPath = "/Account/Logout";
+    options.AccessDeniedPath = "/Account/AccessDenied";
+    options.SlidingExpiration = true;
+});
+
 // Register application services
 // Регистриране на услуги на приложението.
 builder.Services.AddScoped<PlotManagementService>();
 builder.Services.AddScoped<MemberManagementService>();
 
 var app = builder.Build();
+
+// Seed roles and default users on startup
+// Начални роли и потребители при стартиране
+using (var scope = app.Services.CreateScope())
+{
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+    // Ensure Admin and User roles exist
+    // Гарантиране на съществуването на роли Admin и User
+    foreach (var role in new[] { "Admin", "User" })
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+            await roleManager.CreateAsync(new IdentityRole(role));
+    }
+
+    // Seed Admin account
+    // Начален администраторски акаунт
+    const string adminEmail = "admin@garden.com";
+    if (await userManager.FindByEmailAsync(adminEmail) == null)
+    {
+        var admin = new ApplicationUser
+        {
+            UserName = adminEmail,
+            Email = adminEmail,
+            FullName = "Garden Administrator",
+            EmailConfirmed = true
+        };
+        var result = await userManager.CreateAsync(admin, "Admin123!");
+        if (result.Succeeded)
+            await userManager.AddToRoleAsync(admin, "Admin");
+    }
+
+    // Seed regular User account
+    // Начален потребителски акаунт
+    const string userEmail = "user@garden.com";
+    if (await userManager.FindByEmailAsync(userEmail) == null)
+    {
+        var user = new ApplicationUser
+        {
+            UserName = userEmail,
+            Email = userEmail,
+            FullName = "Garden User",
+            EmailConfirmed = true
+        };
+        var result = await userManager.CreateAsync(user, "User123!");
+        if (result.Succeeded)
+            await userManager.AddToRoleAsync(user, "User");
+    }
+}
 
 // Configure the HTTP request pipeline.
 // Настройка HTTP заявките
@@ -53,6 +134,9 @@ app.UseRouting();
 // Enable routing
 // Активиране на маршрутизация
 
+app.UseAuthentication();
+// Enable authentication (must come before UseAuthorization)
+// Активиране на удостоверяване (трябва да е преди UseAuthorization)
 app.UseAuthorization();
 // Enable authorization
 // Активиране на авторизация
@@ -61,12 +145,17 @@ app.MapStaticAssets();
 // Map static assets (custom extension)
 // Свързване на статични ресурси (потребителско разширение)
 
+// Area route must be registered before the default route
+// Маршрутът на областта трябва да е регистриран преди основния маршрут
+app.MapControllerRoute(
+    name: "areas",
+    pattern: "{area:exists}/{controller=Dashboard}/{action=Index}/{id?}");
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 // Default controller route with static assets
 // Основен маршрут на контролера със статични ресурси
-
 
 app.Run();
