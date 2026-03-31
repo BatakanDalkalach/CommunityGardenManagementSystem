@@ -115,6 +115,11 @@ using (var scope = app.Services.CreateScope())
         if (result.Succeeded)
             await userManager.AddToRoleAsync(user, "User");
     }
+
+    // Seed garden plots, members, harvest records, and announcements
+    // Начални данни за парцели, членове, реколти и обявления
+    var gardenDb = scope.ServiceProvider.GetRequiredService<CommunityGardenDatabase>();
+    await DbSeeder.SeedAsync(gardenDb);
 }
 
 // Configure the HTTP request pipeline.

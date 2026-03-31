@@ -1,0 +1,187 @@
+using Microsoft.EntityFrameworkCore;
+using WebApplication1.Models;
+
+namespace WebApplication1.DatabaseContext
+{
+    // Runtime seeder that supplements the migration HasData seed with additional records.
+    // Добавя допълнителни начални записи към вече съществуващите от миграциите.
+    public static class DbSeeder
+    {
+        public static async Task SeedAsync(CommunityGardenDatabase db)
+        {
+            await db.Database.EnsureCreatedAsync();
+
+            await SeedMembersAsync(db);
+            await SeedPlotsAsync(db);
+            await SeedHarvestRecordsAsync(db);
+            await SeedAnnouncementsAsync(db);
+
+            await db.SaveChangesAsync();
+        }
+
+        // Adds members 3 and 4 if they are not already present (members 1-2 come from HasData migration).
+        // Добавя членове 3 и 4, ако вече не съществуват (членове 1-2 идват от HasData миграция).
+        private static async Task SeedMembersAsync(CommunityGardenDatabase db)
+        {
+            var existingIds = await db.GardenMembers.Select(m => m.MemberId).ToListAsync();
+
+            var newMembers = new List<GardenMember>
+            {
+                new GardenMember
+                {
+                    MemberId = 3,
+                    FullLegalName = "Elena Petrova",
+                    EmailContact = "elena.petrova@email.com",
+                    MembershipTier = "Premium",
+                    RegistrationDate = new DateTime(2021, 6, 10),
+                    YearsOfExperience = 12,
+                    PreferOrganicOnly = true,
+                    GardeningInterests = "Roses, Lavender, Medicinal herbs"
+                },
+                new GardenMember
+                {
+                    MemberId = 4,
+                    FullLegalName = "David Okonkwo",
+                    EmailContact = "d.okonkwo@email.com",
+                    MembershipTier = "Basic",
+                    RegistrationDate = new DateTime(2024, 2, 28),
+                    YearsOfExperience = 1,
+                    PreferOrganicOnly = false,
+                    GardeningInterests = "Lettuce, Beans, Cucumbers"
+                }
+            };
+
+            foreach (var member in newMembers.Where(m => !existingIds.Contains(m.MemberId)))
+                db.GardenMembers.Add(member);
+        }
+
+        // Adds plots 4-6 if not already present (plots 1-3 come from HasData migration).
+        // Добавя парцели 4-6, ако вече не съществуват (парцели 1-3 идват от HasData миграция).
+        private static async Task SeedPlotsAsync(CommunityGardenDatabase db)
+        {
+            var existingIds = await db.GardenPlots.Select(p => p.PlotIdentifier).ToListAsync();
+
+            var newPlots = new List<GardenPlot>
+            {
+                new GardenPlot
+                {
+                    PlotIdentifier = 4,
+                    PlotDesignation = "B002",
+                    SquareMeters = 18.0,
+                    SoilType = "Loamy",
+                    WaterAccessAvailable = true,
+                    IsOccupied = true,
+                    YearlyRentalFee = 110m,
+                    LastMaintenanceDate = new DateTime(2025, 1, 20),
+                    AssignedGardenerId = 3
+                },
+                new GardenPlot
+                {
+                    PlotIdentifier = 5,
+                    PlotDesignation = "C001",
+                    SquareMeters = 40.0,
+                    SoilType = "Sandy",
+                    WaterAccessAvailable = false,
+                    IsOccupied = true,
+                    YearlyRentalFee = 200m,
+                    LastMaintenanceDate = new DateTime(2025, 3, 5),
+                    AssignedGardenerId = 4
+                },
+                new GardenPlot
+                {
+                    PlotIdentifier = 6,
+                    PlotDesignation = "C002",
+                    SquareMeters = 22.5,
+                    SoilType = "Clay",
+                    WaterAccessAvailable = true,
+                    IsOccupied = false,
+                    YearlyRentalFee = 130m,
+                    LastMaintenanceDate = new DateTime(2025, 2, 10),
+                    AssignedGardenerId = null
+                }
+            };
+
+            foreach (var plot in newPlots.Where(p => !existingIds.Contains(p.PlotIdentifier)))
+                db.GardenPlots.Add(plot);
+        }
+
+        // Adds harvest records 3 and 4 if not already present (records 1-2 come from HasData migration).
+        // Добавя записи за реколта 3 и 4, ако вече не съществуват (записи 1-2 идват от HasData миграция).
+        private static async Task SeedHarvestRecordsAsync(CommunityGardenDatabase db)
+        {
+            var existingIds = await db.HarvestRecords.Select(h => h.RecordId).ToListAsync();
+
+            var newRecords = new List<HarvestRecord>
+            {
+                new HarvestRecord
+                {
+                    RecordId = 3,
+                    PlotIdentifier = 4,
+                    MemberId = 3,
+                    CropName = "Lavender",
+                    QuantityKilograms = 3.2,
+                    CollectionDate = new DateTime(2025, 7, 8),
+                    QualityScore = 5,
+                    HarvestNotes = "Fragrant and full-bloom; dried successfully",
+                    IsOrganicCertified = true
+                },
+                new HarvestRecord
+                {
+                    RecordId = 4,
+                    PlotIdentifier = 5,
+                    MemberId = 4,
+                    CropName = "Green Beans",
+                    QuantityKilograms = 6.7,
+                    CollectionDate = new DateTime(2025, 8, 14),
+                    QualityScore = 3,
+                    HarvestNotes = "Decent yield; soil dryness affected growth",
+                    IsOrganicCertified = false
+                }
+            };
+
+            foreach (var record in newRecords.Where(r => !existingIds.Contains(r.RecordId)))
+                db.HarvestRecords.Add(record);
+        }
+
+        // Seeds 3 announcements if none exist yet.
+        // Добавя 3 обявления, ако все още няма нито едно.
+        private static async Task SeedAnnouncementsAsync(CommunityGardenDatabase db)
+        {
+            if (await db.Announcements.AnyAsync())
+                return;
+
+            db.Announcements.AddRange(
+                new Announcement
+                {
+                    Title = "Spring Planting Season Opens April 15",
+                    Content = "We are excited to announce that the spring planting season officially begins on April 15th. " +
+                              "All plot holders should clear and prepare their plots by April 10th. " +
+                              "Shared tools are available from the equipment shed during opening hours. " +
+                              "New members are encouraged to attend the orientation session on April 12th at 10:00 AM.",
+                    CreatedAt = new DateTime(2025, 3, 28, 9, 0, 0, DateTimeKind.Utc),
+                    IsPublished = true
+                },
+                new Announcement
+                {
+                    Title = "Compost Bins Now Available at Section B",
+                    Content = "The garden committee has installed three new compost bins near Section B. " +
+                              "Members are encouraged to deposit vegetable scraps and garden trimmings (no meat or dairy). " +
+                              "Finished compost will be distributed to all active plot holders at the end of each season. " +
+                              "Please follow the posted composting guidelines to keep the bins in good condition.",
+                    CreatedAt = new DateTime(2025, 4, 5, 14, 30, 0, DateTimeKind.Utc),
+                    IsPublished = true
+                },
+                new Announcement
+                {
+                    Title = "Water Conservation Notice – Summer Restrictions",
+                    Content = "Due to the recent drought advisory, the garden board has introduced summer water-use guidelines. " +
+                              "Watering is permitted only between 6:00–8:00 AM and 7:00–9:00 PM on weekdays. " +
+                              "Weekend watering is unrestricted. Members with drip irrigation systems are exempt. " +
+                              "Violations may result in temporary suspension of water access. Thank you for your cooperation.",
+                    CreatedAt = new DateTime(2025, 6, 1, 8, 0, 0, DateTimeKind.Utc),
+                    IsPublished = false
+                }
+            );
+        }
+    }
+}
