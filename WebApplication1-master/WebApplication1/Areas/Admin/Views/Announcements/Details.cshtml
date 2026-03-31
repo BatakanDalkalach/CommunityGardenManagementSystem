@@ -1,0 +1,50 @@
+@model WebApplication1.Models.Announcement
+@{
+    ViewData["Title"] = "Announcement Details";
+}
+
+<div class="card shadow-sm" style="max-width: 760px; margin: 0 auto;">
+    <div class="card-header d-flex justify-content-between align-items-center" style="background: #1e3a2f; color: white;">
+        <span class="fw-bold fs-5">📢 @Model.Title</span>
+        @if (Model.IsPublished)
+        {
+            <span class="badge bg-success">Published</span>
+        }
+        else
+        {
+            <span class="badge bg-secondary">Draft</span>
+        }
+    </div>
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-3 text-muted">ID</dt>
+            <dd class="col-sm-9">#@Model.Id</dd>
+
+            <dt class="col-sm-3 text-muted">Title</dt>
+            <dd class="col-sm-9 fw-semibold">@Model.Title</dd>
+
+            <dt class="col-sm-3 text-muted">Content</dt>
+            <dd class="col-sm-9" style="white-space: pre-wrap;">@Model.Content</dd>
+
+            <dt class="col-sm-3 text-muted">Created At</dt>
+            <dd class="col-sm-9">@Model.CreatedAt.ToLocalTime().ToString("dddd, MMMM d, yyyy HH:mm")</dd>
+
+            <dt class="col-sm-3 text-muted">Status</dt>
+            <dd class="col-sm-9">
+                @if (Model.IsPublished)
+                {
+                    <span class="badge bg-success">Published</span>
+                }
+                else
+                {
+                    <span class="badge bg-secondary">Draft — not visible to members</span>
+                }
+            </dd>
+        </dl>
+    </div>
+    <div class="card-footer d-flex gap-2 justify-content-end">
+        <a asp-action="Index" class="btn btn-secondary btn-sm">← Back</a>
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning btn-sm">✏️ Edit</a>
+        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger btn-sm">🗑️ Delete</a>
+    </div>
+</div>

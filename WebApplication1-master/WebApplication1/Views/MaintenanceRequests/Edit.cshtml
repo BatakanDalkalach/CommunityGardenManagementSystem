@@ -1,0 +1,79 @@
+@model WebApplication1.Models.MaintenanceRequest
+@{
+    ViewData["Title"] = "Edit Maintenance Request";
+}
+
+<article class="cgms-form-container">
+    <style>
+        .cgms-form-container { background: linear-gradient(135deg, #fef3c7, #fff); padding: 2.5rem 1rem; min-height: 100vh; }
+        .cgms-form-card { max-width: 760px; margin: 0 auto; background: white; border-radius: 1.2rem; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.1); }
+        .cgms-form-header { background: #92400e; padding: 2.5rem; text-align: center; color: white; }
+        .cgms-form-icon { font-size: 3rem; margin-bottom: 0.6rem; }
+        .cgms-form-heading { margin: 0; font-size: 1.9rem; font-weight: 900; }
+        .cgms-form-subhead { margin: 0.5rem 0 0; opacity: 0.88; }
+        .cgms-form-main { padding: 2.4rem; }
+        .cgms-input-group { margin-bottom: 1.6rem; }
+        .cgms-label-text { display: block; font-weight: 700; margin-bottom: 0.5rem; color: #111827; }
+        .cgms-input-field { width: 100%; padding: 0.9rem; border: 2px solid #d1d5db; border-radius: 0.7rem; font-size: 1rem; }
+        .cgms-input-field:focus { outline: none; border-color: #92400e; box-shadow: 0 0 0 3px rgba(146,64,14,0.1); }
+        .cgms-two-col { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.6rem; }
+        .cgms-button-group { display: grid; grid-template-columns: 1fr 2fr; gap: 1rem; margin-top: 2rem; padding-top: 1.8rem; border-top: 2px solid #e5e7eb; }
+        .cgms-btn { padding: 1rem; text-align: center; border-radius: 0.7rem; font-weight: 800; font-size: 1rem; cursor: pointer; text-decoration: none; display: block; }
+        .cgms-btn-cancel { background: #9ca3af; color: white; }
+        .cgms-btn-cancel:hover { background: #6b7280; color: white; }
+        .cgms-btn-submit { background: #d97706; color: white; border: none; }
+        .cgms-btn-submit:hover { background: #b45309; }
+    </style>
+
+    <div class="container">
+        <div class="cgms-form-card">
+            <header class="cgms-form-header">
+                <div class="cgms-form-icon">✏️</div>
+                <h1 class="cgms-form-heading">Edit Maintenance Request</h1>
+                <p class="cgms-form-subhead">Update the request details below</p>
+            </header>
+
+            <form asp-action="Edit" method="post" class="cgms-form-main">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                <input type="hidden" asp-for="Id" />
+
+                <div class="cgms-two-col">
+                    <div class="cgms-input-group">
+                        <label asp-for="PlotId" class="cgms-label-text"></label>
+                        <select asp-for="PlotId" class="cgms-input-field" asp-items="ViewBag.PlotOptions">
+                            <option value="">-- Select a plot --</option>
+                        </select>
+                        <span asp-validation-for="PlotId" class="text-danger small"></span>
+                    </div>
+
+                    <div class="cgms-input-group">
+                        <label asp-for="RequestDate" class="cgms-label-text"></label>
+                        <input asp-for="RequestDate" type="date" class="cgms-input-field" />
+                        <span asp-validation-for="RequestDate" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="cgms-input-group">
+                    <label asp-for="Description" class="cgms-label-text"></label>
+                    <textarea asp-for="Description" class="cgms-input-field" rows="5"></textarea>
+                    <span asp-validation-for="Description" class="text-danger small"></span>
+                </div>
+
+                <div class="cgms-input-group">
+                    <label asp-for="Status" class="cgms-label-text"></label>
+                    <select asp-for="Status" class="cgms-input-field" asp-items="Html.GetEnumSelectList<WebApplication1.Models.MaintenanceStatus>()"></select>
+                    <span asp-validation-for="Status" class="text-danger small"></span>
+                </div>
+
+                <nav class="cgms-button-group">
+                    <a asp-action="Index" class="cgms-btn cgms-btn-cancel">Cancel</a>
+                    <button type="submit" class="cgms-btn cgms-btn-submit">✏️ Save Changes</button>
+                </nav>
+            </form>
+        </div>
+    </div>
+</article>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

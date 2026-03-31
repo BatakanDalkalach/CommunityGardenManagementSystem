@@ -19,6 +19,8 @@ namespace WebApplication1.DatabaseContext
         public DbSet<GardenPlot> GardenPlots { get; set; } = null!;
         public DbSet<GardenMember> GardenMembers { get; set; } = null!;
         public DbSet<HarvestRecord> HarvestRecords { get; set; } = null!;
+        public DbSet<Announcement> Announcements { get; set; } = null!;
+        public DbSet<MaintenanceRequest> MaintenanceRequests { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -48,7 +50,7 @@ namespace WebApplication1.DatabaseContext
             builder.Entity<HarvestRecord>(harvest =>
             {
                 harvest.HasKey(h => h.RecordId);
-                
+
                 harvest.HasOne(h => h.SourcePlot)
                     .WithMany(p => p.HarvestHistory)
                     .HasForeignKey(h => h.PlotIdentifier)
@@ -58,6 +60,29 @@ namespace WebApplication1.DatabaseContext
                     .WithMany(m => m.RecordedHarvests)
                     .HasForeignKey(h => h.MemberId)
                     .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            // Announcement: simple entity with no relationships
+            // Announcement: прост обект без релации
+            builder.Entity<Announcement>(announcement =>
+            {
+                announcement.HasKey(a => a.Id);
+                announcement.Property(a => a.Title).HasMaxLength(200);
+                announcement.Property(a => a.Content).HasMaxLength(5000);
+            });
+
+            // MaintenanceRequest: linked to GardenPlot via PlotId
+            // MaintenanceRequest: свързан с GardenPlot чрез PlotId
+            builder.Entity<MaintenanceRequest>(req =>
+            {
+                req.HasKey(r => r.Id);
+                req.Property(r => r.Description).HasMaxLength(1000);
+                req.Property(r => r.Status).HasConversion<string>();
+
+                req.HasOne(r => r.Plot)
+                    .WithMany()
+                    .HasForeignKey(r => r.PlotId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             // Seed starter data
