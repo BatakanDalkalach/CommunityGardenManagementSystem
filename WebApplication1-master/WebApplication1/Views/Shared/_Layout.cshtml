@@ -43,6 +43,15 @@
                             </li>
                         }
                         <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="HarvestRecords" asp-action="Index">Harvests</a>
+                        </li>
+                        @if (SignInManager.IsSignedIn(User))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="HarvestRecords" asp-action="Create">Log Harvest</a>
+                            </li>
+                        }
+                        <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
                     </ul>

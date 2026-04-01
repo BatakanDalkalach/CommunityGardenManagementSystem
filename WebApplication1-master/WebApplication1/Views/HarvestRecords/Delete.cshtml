@@ -1,0 +1,101 @@
+@model WebApplication1.Models.HarvestRecord
+@{
+    ViewData["Title"] = "Delete Harvest Record";
+    var stars = new string('★', Model.QualityScore) + new string('☆', 5 - Model.QualityScore);
+}
+
+<article class="cgms-delete-container">
+    <style>
+        .cgms-delete-container { background: linear-gradient(135deg, #fee2e2, #fff); padding: 2.5rem 1rem; min-height: 100vh; }
+        .cgms-delete-card { max-width: 680px; margin: 0 auto; background: white; border-radius: 1.2rem; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.1); }
+        .cgms-delete-header { background: #dc2626; padding: 2.5rem; text-align: center; color: white; }
+        .cgms-delete-icon { font-size: 3rem; margin-bottom: 0.6rem; }
+        .cgms-delete-heading { margin: 0; font-size: 1.9rem; font-weight: 900; }
+        .cgms-delete-subhead { margin: 0.5rem 0 0; opacity: 0.88; }
+        .cgms-delete-body { padding: 2.4rem; }
+        .cgms-warning-box { background: #fef2f2; border: 2px solid #fecaca; border-radius: 0.8rem; padding: 1.2rem; margin-bottom: 1.8rem; }
+        .cgms-warning-title { font-weight: 800; color: #dc2626; margin-bottom: 0.5rem; }
+        .cgms-record-summary { border: 1px solid #e5e7eb; border-radius: 0.8rem; overflow: hidden; margin-bottom: 1.8rem; }
+        .cgms-record-row { display: flex; justify-content: space-between; padding: 0.75rem 1.2rem; border-bottom: 1px solid #f3f4f6; }
+        .cgms-record-row:last-child { border-bottom: none; }
+        .cgms-record-label { color: #6b7280; font-size: 0.9rem; }
+        .cgms-record-value { font-weight: 600; color: #111827; }
+        .quality-stars { color: #f59e0b; }
+        .organic-chip { display: inline-block; background: #dcfce7; color: #15803d; padding: 0.15rem 0.6rem; border-radius: 2rem; font-size: 0.82rem; font-weight: 700; }
+        .cgms-button-group { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .cgms-btn { padding: 1rem; text-align: center; border-radius: 0.7rem; font-weight: 800; font-size: 1rem; cursor: pointer; text-decoration: none; display: block; }
+        .cgms-btn-cancel { background: #6b7280; color: white; }
+        .cgms-btn-cancel:hover { background: #4b5563; color: white; }
+        .cgms-btn-delete { background: #dc2626; color: white; border: none; }
+        .cgms-btn-delete:hover { background: #b91c1c; }
+    </style>
+
+    <div class="container">
+        <div class="cgms-delete-card">
+            <header class="cgms-delete-header">
+                <div class="cgms-delete-icon">🗑️</div>
+                <h1 class="cgms-delete-heading">Delete Harvest Record</h1>
+                <p class="cgms-delete-subhead">This action cannot be undone</p>
+            </header>
+
+            <div class="cgms-delete-body">
+                <div class="cgms-warning-box">
+                    <div class="cgms-warning-title">⚠ Confirm Deletion</div>
+                    <p class="mb-0 text-muted">You are about to permanently delete the harvest record below. This cannot be recovered.</p>
+                </div>
+
+                <div class="cgms-record-summary">
+                    <div class="cgms-record-row">
+                        <span class="cgms-record-label">Record ID</span>
+                        <span class="cgms-record-value">#@Model.RecordId</span>
+                    </div>
+                    <div class="cgms-record-row">
+                        <span class="cgms-record-label">Crop</span>
+                        <span class="cgms-record-value">@Model.CropName</span>
+                    </div>
+                    <div class="cgms-record-row">
+                        <span class="cgms-record-label">Plot</span>
+                        <span class="cgms-record-value">@(Model.SourcePlot?.PlotDesignation ?? "—")</span>
+                    </div>
+                    <div class="cgms-record-row">
+                        <span class="cgms-record-label">Harvester</span>
+                        <span class="cgms-record-value">@(Model.Harvester?.FullLegalName ?? "—")</span>
+                    </div>
+                    <div class="cgms-record-row">
+                        <span class="cgms-record-label">Quantity</span>
+                        <span class="cgms-record-value">@Model.QuantityKilograms.ToString("F1") kg</span>
+                    </div>
+                    <div class="cgms-record-row">
+                        <span class="cgms-record-label">Collection Date</span>
+                        <span class="cgms-record-value">@Model.CollectionDate.ToString("MMMM d, yyyy")</span>
+                    </div>
+                    <div class="cgms-record-row">
+                        <span class="cgms-record-label">Quality</span>
+                        <span class="cgms-record-value quality-stars">@stars (@Model.QualityScore/5)</span>
+                    </div>
+                    <div class="cgms-record-row">
+                        <span class="cgms-record-label">Organic</span>
+                        <span class="cgms-record-value">
+                            @if (Model.IsOrganicCertified)
+                            {
+                                <span class="organic-chip">✓ Certified</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">No</span>
+                            }
+                        </span>
+                    </div>
+                </div>
+
+                <form asp-action="Delete" method="post">
+                    <input type="hidden" asp-for="RecordId" />
+                    <nav class="cgms-button-group">
+                        <a asp-action="Index" class="cgms-btn cgms-btn-cancel">← Cancel</a>
+                        <button type="submit" class="cgms-btn cgms-btn-delete">🗑️ Delete Permanently</button>
+                    </nav>
+                </form>
+            </div>
+        </div>
+    </div>
+</article>

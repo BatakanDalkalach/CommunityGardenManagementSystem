@@ -1,0 +1,141 @@
+@model IEnumerable<WebApplication1.Models.HarvestRecord>
+@{
+    ViewData["Title"] = "Harvest Records";
+    int currentPage = ViewBag.CurrentPage;
+    int totalPages = ViewBag.TotalPages;
+}
+
+<article class="cgms-list-container">
+    <style>
+        .cgms-list-container { background: linear-gradient(135deg, #dcfce7, #fff); padding: 2.5rem 1rem; min-height: 100vh; }
+        .cgms-list-card { max-width: 1100px; margin: 0 auto; background: white; border-radius: 1.2rem; overflow: hidden; box-shadow: 0 6px 24px rgba(0,0,0,0.1); }
+        .cgms-list-header { background: #15803d; padding: 2.5rem; color: white; }
+        .cgms-list-icon { font-size: 3rem; margin-bottom: 0.6rem; }
+        .cgms-list-heading { margin: 0; font-size: 2rem; font-weight: 900; }
+        .cgms-list-subhead { margin: 0.5rem 0 0; opacity: 0.88; }
+        .cgms-list-body { padding: 2rem; }
+        .stat-bar { display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+        .stat-pill { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 2rem; padding: 0.5rem 1.2rem; font-size: 0.92rem; }
+        .stat-pill strong { color: #15803d; }
+        .organic-badge { background: #dcfce7; color: #15803d; padding: 0.25rem 0.7rem; border-radius: 2rem; font-size: 0.8rem; font-weight: 700; }
+        .quality-stars { color: #f59e0b; font-size: 0.95rem; letter-spacing: -1px; }
+        .filter-bar { display: flex; gap: 0.75rem; align-items: flex-end; flex-wrap: wrap; margin-bottom: 1.5rem; }
+        .pagination-bar { display: flex; gap: 0.4rem; align-items: center; justify-content: center; margin-top: 1.5rem; }
+        .page-btn { padding: 0.4rem 0.9rem; border-radius: 0.5rem; border: 1px solid #d1d5db; background: white; color: #374151; text-decoration: none; font-size: 0.9rem; }
+        .page-btn.active { background: #15803d; color: white; border-color: #15803d; font-weight: 700; }
+        .page-btn:hover:not(.active):not(.disabled) { background: #f0fdf4; border-color: #15803d; color: #15803d; }
+        .page-btn.disabled { color: #9ca3af; pointer-events: none; }
+    </style>
+
+    <div class="container">
+        <div class="cgms-list-card">
+            <header class="cgms-list-header">
+                <div class="cgms-list-icon">🌾</div>
+                <h1 class="cgms-list-heading">Harvest Records</h1>
+                <p class="cgms-list-subhead">Track all garden harvests, yields, and quality ratings</p>
+            </header>
+
+            <div class="cgms-list-body">
+                @if (TempData["SuccessMsg"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        @TempData["SuccessMsg"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+
+                <div class="stat-bar">
+                    <div class="stat-pill">Total Records: <strong>@ViewBag.TotalCount</strong></div>
+                    <div class="stat-pill">Organic Harvests: <strong>@ViewBag.OrganicCount</strong></div>
+                    <div class="stat-pill">Total Yield: <strong>@(((double)ViewBag.TotalKg).ToString("F1")) kg</strong></div>
+                </div>
+
+                <form method="get" asp-action="Index" class="filter-bar">
+                    <div>
+                        <label class="form-label fw-semibold mb-1 d-block" style="font-size:0.88rem;">Crop Name</label>
+                        <input type="text" name="crop" value="@ViewBag.CropFilter" class="form-control form-control-sm" placeholder="e.g. Tomato" style="width:200px;" />
+                    </div>
+                    <button type="submit" class="btn btn-sm btn-success">Filter</button>
+                    @if (!string.IsNullOrEmpty(ViewBag.CropFilter as string))
+                    {
+                        <a asp-action="Index" class="btn btn-sm btn-outline-secondary">Clear</a>
+                    }
+                    <div class="ms-auto">
+                        @if (User.Identity!.IsAuthenticated)
+                        {
+                            <a asp-action="Create" class="btn btn-success">+ Log Harvest</a>
+                        }
+                    </div>
+                </form>
+
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>#</th>
+                                <th>Crop</th>
+                                <th>Plot</th>
+                                <th>Harvester</th>
+                                <th>Quantity (kg)</th>
+                                <th>Date</th>
+                                <th>Quality</th>
+                                <th>Organic</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                var stars = new string('★', item.QualityScore) + new string('☆', 5 - item.QualityScore);
+                                <tr>
+                                    <td class="text-muted small">@item.RecordId</td>
+                                    <td><span class="fw-bold">@item.CropName</span></td>
+                                    <td class="text-muted">@item.SourcePlot?.PlotDesignation</td>
+                                    <td class="text-muted small">@item.Harvester?.FullLegalName</td>
+                                    <td>@item.QuantityKilograms.ToString("F1")</td>
+                                    <td class="text-muted small">@item.CollectionDate.ToString("MMM d, yyyy")</td>
+                                    <td><span class="quality-stars">@stars</span></td>
+                                    <td>
+                                        @if (item.IsOrganicCertified)
+                                        {
+                                            <span class="organic-badge">✓ Organic</span>
+                                        }
+                                    </td>
+                                    <td class="text-end">
+                                        <a asp-action="Details" asp-route-id="@item.RecordId" class="btn btn-sm btn-outline-secondary">View</a>
+                                        @if (User.Identity!.IsAuthenticated)
+                                        {
+                                            <a asp-action="Edit" asp-route-id="@item.RecordId" class="btn btn-sm btn-outline-warning">Edit</a>
+                                            <a asp-action="Delete" asp-route-id="@item.RecordId" class="btn btn-sm btn-outline-danger">Delete</a>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                            @if (!Model.Any())
+                            {
+                                <tr>
+                                    <td colspan="9" class="text-center text-muted py-4">No harvest records found.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                @if (totalPages > 1)
+                {
+                    <nav class="pagination-bar">
+                        <a asp-action="Index" asp-route-page="@(currentPage - 1)" asp-route-crop="@ViewBag.CropFilter"
+                           class="page-btn @(currentPage == 1 ? "disabled" : "")">&#8249;</a>
+                        @for (int p = 1; p <= totalPages; p++)
+                        {
+                            <a asp-action="Index" asp-route-page="@p" asp-route-crop="@ViewBag.CropFilter"
+                               class="page-btn @(p == currentPage ? "active" : "")">@p</a>
+                        }
+                        <a asp-action="Index" asp-route-page="@(currentPage + 1)" asp-route-crop="@ViewBag.CropFilter"
+                           class="page-btn @(currentPage == totalPages ? "disabled" : "")">&#8250;</a>
+                    </nav>
+                }
+            </div>
+        </div>
+    </div>
+</article>

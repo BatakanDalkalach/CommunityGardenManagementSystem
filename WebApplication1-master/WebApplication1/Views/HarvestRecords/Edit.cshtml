@@ -1,0 +1,118 @@
+@model WebApplication1.Models.HarvestRecord
+@{
+    ViewData["Title"] = "Edit Harvest Record";
+}
+
+<article class="cgms-form-container">
+    <style>
+        .cgms-form-container { background: linear-gradient(135deg, #dcfce7, #fff); padding: 2.5rem 1rem; min-height: 100vh; }
+        .cgms-form-card { max-width: 780px; margin: 0 auto; background: white; border-radius: 1.2rem; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.1); }
+        .cgms-form-header { background: #b45309; padding: 2.5rem; text-align: center; color: white; }
+        .cgms-form-icon { font-size: 3rem; margin-bottom: 0.6rem; }
+        .cgms-form-heading { margin: 0; font-size: 1.9rem; font-weight: 900; }
+        .cgms-form-subhead { margin: 0.5rem 0 0; opacity: 0.88; }
+        .cgms-form-main { padding: 2.4rem; }
+        .cgms-section-title { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; color: #6b7280; font-weight: 700; margin-bottom: 1rem; padding-bottom: 0.4rem; border-bottom: 1px solid #e5e7eb; }
+        .cgms-input-group { margin-bottom: 1.4rem; }
+        .cgms-label-text { display: block; font-weight: 700; margin-bottom: 0.45rem; color: #111827; font-size: 0.95rem; }
+        .cgms-input-field { width: 100%; padding: 0.85rem; border: 2px solid #d1d5db; border-radius: 0.7rem; font-size: 1rem; transition: border-color 0.15s; }
+        .cgms-input-field:focus { outline: none; border-color: #b45309; box-shadow: 0 0 0 3px rgba(180,83,9,0.12); }
+        .cgms-two-col { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.4rem; }
+        .cgms-three-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.4rem; }
+        .cgms-check-row { display: flex; align-items: center; gap: 0.75rem; padding: 1rem; background: #fffbeb; border: 1px solid #fde68a; border-radius: 0.7rem; }
+        .cgms-button-group { display: grid; grid-template-columns: 1fr 2fr; gap: 1rem; margin-top: 2rem; padding-top: 1.8rem; border-top: 2px solid #e5e7eb; }
+        .cgms-btn { padding: 1rem; text-align: center; border-radius: 0.7rem; font-weight: 800; font-size: 1rem; cursor: pointer; text-decoration: none; display: block; }
+        .cgms-btn-cancel { background: #9ca3af; color: white; }
+        .cgms-btn-cancel:hover { background: #6b7280; color: white; }
+        .cgms-btn-submit { background: #b45309; color: white; border: none; }
+        .cgms-btn-submit:hover { background: #92400e; }
+    </style>
+
+    <div class="container">
+        <div class="cgms-form-card">
+            <header class="cgms-form-header">
+                <div class="cgms-form-icon">✏️</div>
+                <h1 class="cgms-form-heading">Edit Harvest Record</h1>
+                <p class="cgms-form-subhead">Record #@Model.RecordId — @Model.CropName</p>
+            </header>
+
+            <form asp-action="Edit" method="post" class="cgms-form-main">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                <input asp-for="RecordId" type="hidden" />
+
+                <p class="cgms-section-title">Plot &amp; Harvester</p>
+                <div class="cgms-two-col">
+                    <div class="cgms-input-group">
+                        <label asp-for="PlotIdentifier" class="cgms-label-text"></label>
+                        <select asp-for="PlotIdentifier" class="cgms-input-field" asp-items="ViewBag.PlotOptions">
+                            <option value="">-- Select plot --</option>
+                        </select>
+                        <span asp-validation-for="PlotIdentifier" class="text-danger small"></span>
+                    </div>
+                    <div class="cgms-input-group">
+                        <label asp-for="MemberId" class="cgms-label-text"></label>
+                        <select asp-for="MemberId" class="cgms-input-field" asp-items="ViewBag.MemberOptions">
+                            <option value="">-- Select member --</option>
+                        </select>
+                        <span asp-validation-for="MemberId" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <p class="cgms-section-title">Harvest Details</p>
+                <div class="cgms-two-col">
+                    <div class="cgms-input-group">
+                        <label asp-for="CropName" class="cgms-label-text"></label>
+                        <input asp-for="CropName" class="cgms-input-field" />
+                        <span asp-validation-for="CropName" class="text-danger small"></span>
+                    </div>
+                    <div class="cgms-input-group">
+                        <label asp-for="CollectionDate" class="cgms-label-text"></label>
+                        <input asp-for="CollectionDate" type="date" class="cgms-input-field" />
+                        <span asp-validation-for="CollectionDate" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="cgms-three-col">
+                    <div class="cgms-input-group">
+                        <label asp-for="QuantityKilograms" class="cgms-label-text"></label>
+                        <input asp-for="QuantityKilograms" type="number" step="0.1" min="0.1" max="1000" class="cgms-input-field" />
+                        <span asp-validation-for="QuantityKilograms" class="text-danger small"></span>
+                    </div>
+                    <div class="cgms-input-group">
+                        <label asp-for="QualityScore" class="cgms-label-text"></label>
+                        <select asp-for="QualityScore" class="cgms-input-field">
+                            <option value="1">1 – Poor</option>
+                            <option value="2">2 – Fair</option>
+                            <option value="3">3 – Good</option>
+                            <option value="4">4 – Very Good</option>
+                            <option value="5">5 – Excellent</option>
+                        </select>
+                        <span asp-validation-for="QualityScore" class="text-danger small"></span>
+                    </div>
+                    <div class="cgms-input-group d-flex flex-column justify-content-end">
+                        <div class="cgms-check-row">
+                            <input asp-for="IsOrganicCertified" class="form-check-input" style="width:1.3rem;height:1.3rem;" />
+                            <label asp-for="IsOrganicCertified" class="cgms-label-text mb-0"></label>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="cgms-section-title">Notes</p>
+                <div class="cgms-input-group">
+                    <label asp-for="HarvestNotes" class="cgms-label-text"></label>
+                    <textarea asp-for="HarvestNotes" class="cgms-input-field" rows="4"></textarea>
+                    <span asp-validation-for="HarvestNotes" class="text-danger small"></span>
+                </div>
+
+                <nav class="cgms-button-group">
+                    <a asp-action="Index" class="cgms-btn cgms-btn-cancel">Cancel</a>
+                    <button type="submit" class="cgms-btn cgms-btn-submit">✏️ Save Changes</button>
+                </nav>
+            </form>
+        </div>
+    </div>
+</article>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
