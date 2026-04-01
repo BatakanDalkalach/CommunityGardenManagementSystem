@@ -1,0 +1,57 @@
+@model WebApplication1.Models.GardenMember
+
+<article class="cgms-member-card">
+    <header class="cgms-card-top @Model.MembershipTier.ToLower()">
+        <div class="cgms-tier-tag">@Model.MembershipTier</div>
+        <div class="cgms-member-avatar">
+            @(Model.PreferOrganicOnly ? "🌿" : "👨‍🌾")
+        </div>
+        <h3 class="cgms-member-name">@Model.FullLegalName</h3>
+    </header>
+
+    <div class="cgms-card-details">
+        <div class="cgms-detail-row">
+            <div class="cgms-detail-icon">📧</div>
+            <div class="cgms-detail-content">
+                <div class="cgms-detail-label">Email</div>
+                <div class="cgms-detail-value">@Model.EmailContact</div>
+            </div>
+        </div>
+
+        <div class="cgms-detail-row">
+            <div class="cgms-detail-icon">📅</div>
+            <div class="cgms-detail-content">
+                <div class="cgms-detail-label">Joined</div>
+                <div class="cgms-detail-value">@Model.RegistrationDate.ToString("MMM yyyy")</div>
+            </div>
+        </div>
+
+        <div class="cgms-detail-row">
+            <div class="cgms-detail-icon">⭐</div>
+            <div class="cgms-detail-content">
+                <div class="cgms-detail-label">Experience</div>
+                <div class="cgms-detail-value">@Model.YearsOfExperience years</div>
+            </div>
+        </div>
+
+        <div class="cgms-tags">
+            @if (Model.PreferOrganicOnly)
+            {
+                <span class="cgms-tag organic">🌱 Organic</span>
+            }
+            @if (Model.ManagedPlots?.Any() == true)
+            {
+                <span class="cgms-tag">📍 @Model.ManagedPlots.Count plot(s)</span>
+            }
+        </div>
+
+        @if (!string.IsNullOrEmpty(Model.GardeningInterests))
+        {
+            <div class="cgms-interests">
+                <strong>Interests:</strong> @Model.GardeningInterests
+            </div>
+        }
+
+        <a asp-controller="Members" asp-action="ViewProfile" asp-route-id="@Model.MemberId" class="cgms-profile-btn">View Profile</a>
+    </div>
+</article>

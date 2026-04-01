@@ -1,0 +1,13 @@
+@model IEnumerable<WebApplication1.Models.StatsBarItem>
+
+<section class="cgms-summary-bar">
+    <div class="cgms-metrics">
+        @foreach (var stat in Model)
+        {
+            <div class="cgms-metric-item">
+                <span class="cgms-metric-num @stat.ColorClass">@stat.Value</span>
+                <span class="cgms-metric-txt">@stat.Label</span>
+            </div>
+        }
+    </div>
+</section>

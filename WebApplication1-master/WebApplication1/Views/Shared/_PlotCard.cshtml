@@ -1,0 +1,41 @@
+@model WebApplication1.Models.GardenPlot
+
+<article class="cgms-plot-tile">
+    <header class="cgms-tile-header @(Model.IsOccupied ? "taken" : "free")">
+        <div class="cgms-status-pill">@(Model.IsOccupied ? "Occupied" : "Free")</div>
+        <div class="cgms-code-display">@Model.PlotDesignation</div>
+    </header>
+
+    <div class="cgms-tile-content">
+        <table class="cgms-spec-table">
+            <tr class="cgms-spec-row">
+                <td class="cgms-spec-label">Area:</td>
+                <td class="cgms-spec-value">@Model.SquareMeters m²</td>
+            </tr>
+            <tr class="cgms-spec-row">
+                <td class="cgms-spec-label">Soil:</td>
+                <td class="cgms-spec-value">@Model.SoilType</td>
+            </tr>
+            <tr class="cgms-spec-row">
+                <td class="cgms-spec-label">Fee:</td>
+                <td class="cgms-spec-value">@Model.YearlyRentalFee.ToString("C")</td>
+            </tr>
+            <tr class="cgms-spec-row">
+                <td class="cgms-spec-label">Water:</td>
+                <td class="cgms-spec-value">@(Model.WaterAccessAvailable ? "Yes" : "No")</td>
+            </tr>
+        </table>
+
+        @if (Model.CurrentTenant != null)
+        {
+            <div class="cgms-tenant-notice">
+                <strong>Tenant:</strong> @Model.CurrentTenant.FullLegalName
+            </div>
+        }
+
+        <div class="cgms-actions-row">
+            <a asp-controller="Plots" asp-action="ViewDetails" asp-route-id="@Model.PlotIdentifier" class="cgms-action-link cgms-action-view">View</a>
+            <a asp-controller="Plots" asp-action="Modify" asp-route-id="@Model.PlotIdentifier" class="cgms-action-link cgms-action-modify">Edit</a>
+        </div>
+    </div>
+</article>

@@ -60,25 +60,15 @@
             </div>
         }
 
-        <section class="cgms-summary-bar">
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
-                <div class="cgms-metrics">
-                    <div class="cgms-metric-item">
-                        <span class="cgms-metric-num">@ViewBag.TotalCount</span>
-                        <span class="cgms-metric-txt">Total</span>
-                    </div>
-                    <div class="cgms-metric-item">
-                        <span class="cgms-metric-num">@ViewBag.FreeCount</span>
-                        <span class="cgms-metric-txt">Free</span>
-                    </div>
-                    <div class="cgms-metric-item">
-                        <span class="cgms-metric-num">@ViewBag.OccupiedCount</span>
-                        <span class="cgms-metric-txt">Occupied</span>
-                    </div>
-                </div>
-                <a asp-action="AddNew" class="cgms-add-button">+ New Plot</a>
-            </div>
-        </section>
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
+            @await Html.PartialAsync("_StatsBar", new List<WebApplication1.Models.StatsBarItem>
+            {
+                new WebApplication1.Models.StatsBarItem { Label = "Total",    Value = ViewBag.TotalCount.ToString()    },
+                new WebApplication1.Models.StatsBarItem { Label = "Free",     Value = ViewBag.FreeCount.ToString()     },
+                new WebApplication1.Models.StatsBarItem { Label = "Occupied", Value = ViewBag.OccupiedCount.ToString() }
+            })
+            <a asp-action="AddNew" class="cgms-add-button">+ New Plot</a>
+        </div>
 
         <section class="cgms-search-panel">
             <form method="get" asp-action="Index">
@@ -122,45 +112,7 @@
             <section class="cgms-plots-grid">
                 @foreach (var plotItem in Model)
                 {
-                    <article class="cgms-plot-tile">
-                        <header class="cgms-tile-header @(plotItem.IsOccupied ? "taken" : "free")">
-                            <div class="cgms-status-pill">@(plotItem.IsOccupied ? "Occupied" : "Free")</div>
-                            <div class="cgms-code-display">@plotItem.PlotDesignation</div>
-                        </header>
-                        
-                        <div class="cgms-tile-content">
-                            <table class="cgms-spec-table">
-                                <tr class="cgms-spec-row">
-                                    <td class="cgms-spec-label">Area:</td>
-                                    <td class="cgms-spec-value">@plotItem.SquareMeters m²</td>
-                                </tr>
-                                <tr class="cgms-spec-row">
-                                    <td class="cgms-spec-label">Soil:</td>
-                                    <td class="cgms-spec-value">@plotItem.SoilType</td>
-                                </tr>
-                                <tr class="cgms-spec-row">
-                                    <td class="cgms-spec-label">Fee:</td>
-                                    <td class="cgms-spec-value">@plotItem.YearlyRentalFee.ToString("C")</td>
-                                </tr>
-                                <tr class="cgms-spec-row">
-                                    <td class="cgms-spec-label">Water:</td>
-                                    <td class="cgms-spec-value">@(plotItem.WaterAccessAvailable ? "Yes" : "No")</td>
-                                </tr>
-                            </table>
-                            
-                            @if (plotItem.CurrentTenant != null)
-                            {
-                                <div class="cgms-tenant-notice">
-                                    <strong>Tenant:</strong> @plotItem.CurrentTenant.FullLegalName
-                                </div>
-                            }
-                            
-                            <div class="cgms-actions-row">
-                                <a asp-action="ViewDetails" asp-route-id="@plotItem.PlotIdentifier" class="cgms-action-link cgms-action-view">View</a>
-                                <a asp-action="Modify" asp-route-id="@plotItem.PlotIdentifier" class="cgms-action-link cgms-action-modify">Edit</a>
-                            </div>
-                        </div>
-                    </article>
+                    @await Html.PartialAsync("_PlotCard", plotItem)
                 }
             </section>
 

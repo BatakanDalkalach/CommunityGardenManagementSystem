@@ -53,16 +53,11 @@
         <header class="cgms-members-banner">
             <h1 class="cgms-banner-title">👥 Community Members</h1>
             <p style="margin: 0;">Connect with fellow gardeners</p>
-            <div class="cgms-banner-stats">
-                <div class="cgms-stat-box">
-                    <span class="cgms-stat-value">@ViewBag.TotalCount</span>
-                    <span>Members</span>
-                </div>
-                <div class="cgms-stat-box">
-                    <span class="cgms-stat-value">@ViewBag.OrganicCount</span>
-                    <span>Organic</span>
-                </div>
-            </div>
+            @await Html.PartialAsync("_StatsBar", new List<WebApplication1.Models.StatsBarItem>
+            {
+                new WebApplication1.Models.StatsBarItem { Label = "Members", Value = ViewBag.TotalCount.ToString()  },
+                new WebApplication1.Models.StatsBarItem { Label = "Organic",  Value = ViewBag.OrganicCount.ToString() }
+            })
         </header>
 
         @if (TempData["WelcomeMsg"] != null)
@@ -96,61 +91,7 @@
             <section class="cgms-members-grid">
                 @foreach (var mem in Model)
                 {
-                    <article class="cgms-member-card">
-                        <header class="cgms-card-top @mem.MembershipTier.ToLower()">
-                            <div class="cgms-tier-tag">@mem.MembershipTier</div>
-                            <div class="cgms-member-avatar">
-                                @(mem.PreferOrganicOnly ? "🌿" : "👨‍🌾")
-                            </div>
-                            <h3 class="cgms-member-name">@mem.FullLegalName</h3>
-                        </header>
-
-                        <div class="cgms-card-details">
-                            <div class="cgms-detail-row">
-                                <div class="cgms-detail-icon">📧</div>
-                                <div class="cgms-detail-content">
-                                    <div class="cgms-detail-label">Email</div>
-                                    <div class="cgms-detail-value">@mem.EmailContact</div>
-                                </div>
-                            </div>
-
-                            <div class="cgms-detail-row">
-                                <div class="cgms-detail-icon">📅</div>
-                                <div class="cgms-detail-content">
-                                    <div class="cgms-detail-label">Joined</div>
-                                    <div class="cgms-detail-value">@mem.RegistrationDate.ToString("MMM yyyy")</div>
-                                </div>
-                            </div>
-
-                            <div class="cgms-detail-row">
-                                <div class="cgms-detail-icon">⭐</div>
-                                <div class="cgms-detail-content">
-                                    <div class="cgms-detail-label">Experience</div>
-                                    <div class="cgms-detail-value">@mem.YearsOfExperience years</div>
-                                </div>
-                            </div>
-
-                            <div class="cgms-tags">
-                                @if (mem.PreferOrganicOnly)
-                                {
-                                    <span class="cgms-tag organic">🌱 Organic</span>
-                                }
-                                @if (mem.ManagedPlots?.Any() == true)
-                                {
-                                    <span class="cgms-tag">📍 @mem.ManagedPlots.Count plot(s)</span>
-                                }
-                            </div>
-
-                            @if (!string.IsNullOrEmpty(mem.GardeningInterests))
-                            {
-                                <div class="cgms-interests">
-                                    <strong>Interests:</strong> @mem.GardeningInterests
-                                </div>
-                            }
-
-                            <a asp-action="ViewProfile" asp-route-id="@mem.MemberId" class="cgms-profile-btn">View Profile</a>
-                        </div>
-                    </article>
+                    @await Html.PartialAsync("_MemberCard", mem)
                 }
             </section>
 
