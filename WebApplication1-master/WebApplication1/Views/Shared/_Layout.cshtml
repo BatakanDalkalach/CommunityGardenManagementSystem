@@ -90,6 +90,7 @@
         </nav>
     </header>
     <div class="container">
+        @RenderSection("PageActions", required: false)
         <main role="main" class="pb-3">
             @RenderBody()
         </main>

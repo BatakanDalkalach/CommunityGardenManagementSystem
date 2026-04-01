@@ -3,6 +3,12 @@
     ViewData["Title"] = "Garden Plots Gallery";
 }
 
+@section PageActions {
+    <div class="d-flex justify-content-end mb-3">
+        <a asp-action="AddNew" class="btn btn-success btn-lg fw-bold px-4">+ Add New Plot</a>
+    </div>
+}
+
 <article class="cgms-plots-wrapper">
     <style>
         .cgms-plots-wrapper { --primary-hue: 200; --accent-hue: 280; background: hsl(var(--primary-hue), 25%, 95%); padding: 3rem 1rem; min-height: 100vh; }
@@ -60,14 +66,13 @@
             </div>
         }
 
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
+        <div class="mb-2">
             @await Html.PartialAsync("_StatsBar", new List<WebApplication1.Models.StatsBarItem>
             {
                 new WebApplication1.Models.StatsBarItem { Label = "Total",    Value = ViewBag.TotalCount.ToString()    },
                 new WebApplication1.Models.StatsBarItem { Label = "Free",     Value = ViewBag.FreeCount.ToString()     },
                 new WebApplication1.Models.StatsBarItem { Label = "Occupied", Value = ViewBag.OccupiedCount.ToString() }
             })
-            <a asp-action="AddNew" class="cgms-add-button">+ New Plot</a>
         </div>
 
         <section class="cgms-search-panel">

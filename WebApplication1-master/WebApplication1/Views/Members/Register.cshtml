@@ -89,7 +89,7 @@
                             <span>Tier</span>
                         </label>
                         <select asp-for="MembershipTier" class="cgms-field-input">
-                            @foreach (var tier in ViewBag.TierOptions as string[])
+                            @foreach (var tier in (ViewBag.TierOptions as string[]) ?? Array.Empty<string>())
                             {
                                 <option value="@tier">@tier</option>
                             }

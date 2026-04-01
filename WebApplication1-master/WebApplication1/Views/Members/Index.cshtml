@@ -3,6 +3,12 @@
     ViewData["Title"] = "Community Members";
 }
 
+@section PageActions {
+    <div class="d-flex justify-content-end mb-3">
+        <a asp-action="Register" class="btn btn-success btn-lg fw-bold px-4">+ Add Member</a>
+    </div>
+}
+
 <article class="cgms-members-page">
     <style>
         .cgms-members-page { background: linear-gradient(180deg, #dbeafe, #fff); padding: 2.5rem 1rem; min-height: 100vh; }
@@ -75,7 +81,6 @@
                 <a href="@Url.Action("Index", new { tier = "Standard" })" class="cgms-filter-link @(ViewBag.SelectedTier == "Standard" ? "active" : "")">Standard</a>
                 <a href="@Url.Action("Index", new { tier = "Premium" })" class="cgms-filter-link @(ViewBag.SelectedTier == "Premium" ? "active" : "")">Premium</a>
             </div>
-            <a asp-action="Register" class="cgms-register-btn">+ Register</a>
         </section>
 
         @if (!Model.Any())
