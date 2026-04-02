@@ -1,0 +1,86 @@
+@model IEnumerable<WebApplication1.Models.MaintenanceRequest>
+@{
+    ViewData["Title"] = "Maintenance Requests";
+    string? activeFilter = ViewBag.StatusFilter as string;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h6 class="text-muted mb-0">Review and update the status of plot maintenance requests.</h6>
+</div>
+
+@if (TempData["SuccessMsg"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMsg"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<!-- Status filter tabs with counts -->
+<div class="d-flex gap-2 mb-3 flex-wrap">
+    <a asp-action="Index"
+       class="btn btn-sm @(string.IsNullOrEmpty(activeFilter) ? "btn-dark" : "btn-outline-secondary")">
+        All
+    </a>
+    <a asp-action="Index" asp-route-statusFilter="Pending"
+       class="btn btn-sm @(activeFilter == "Pending" ? "btn-warning text-dark" : "btn-outline-warning")">
+        Pending
+        <span class="badge bg-warning text-dark ms-1">@ViewBag.PendingCount</span>
+    </a>
+    <a asp-action="Index" asp-route-statusFilter="InProgress"
+       class="btn btn-sm @(activeFilter == "InProgress" ? "btn-primary" : "btn-outline-primary")">
+        In Progress
+        <span class="badge bg-primary ms-1">@ViewBag.InProgressCount</span>
+    </a>
+    <a asp-action="Index" asp-route-statusFilter="Completed"
+       class="btn btn-sm @(activeFilter == "Completed" ? "btn-success" : "btn-outline-success")">
+        Completed
+        <span class="badge bg-success ms-1">@ViewBag.CompletedCount</span>
+    </a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>Plot</th>
+                    <th>Description</th>
+                    <th>Request Date</th>
+                    <th>Status</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    var badgeClass = item.Status switch
+                    {
+                        WebApplication1.Models.MaintenanceStatus.Pending => "bg-warning text-dark",
+                        WebApplication1.Models.MaintenanceStatus.InProgress => "bg-primary",
+                        WebApplication1.Models.MaintenanceStatus.Completed => "bg-success",
+                        _ => "bg-secondary"
+                    };
+                    <tr>
+                        <td class="text-muted small">@item.Id</td>
+                        <td class="fw-semibold">@item.Plot?.PlotDesignation</td>
+                        <td class="text-truncate" style="max-width: 280px;">@item.Description</td>
+                        <td class="text-muted small">@item.RequestDate.ToString("MMM d, yyyy")</td>
+                        <td><span class="badge @badgeClass">@item.Status</span></td>
+                        <td class="text-end">
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">View</a>
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning">Update Status</a>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-4">No maintenance requests found.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

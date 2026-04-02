@@ -1,0 +1,65 @@
+@model WebApplication1.Models.MaintenanceRequest
+@{
+    ViewData["Title"] = "Update Request Status";
+    var badgeClass = Model.Status switch
+    {
+        WebApplication1.Models.MaintenanceStatus.Pending => "bg-warning text-dark",
+        WebApplication1.Models.MaintenanceStatus.InProgress => "bg-primary",
+        WebApplication1.Models.MaintenanceStatus.Completed => "bg-success",
+        _ => "bg-secondary"
+    };
+}
+
+<div class="mb-3">
+    <a asp-action="Index" class="btn btn-sm btn-outline-secondary">← Back to List</a>
+</div>
+
+<div class="card shadow-sm" style="max-width: 560px;">
+    <div class="card-header bg-white fw-semibold">
+        Update Status — Request #@Model.Id
+    </div>
+    <div class="card-body">
+        <!-- Read-only summary -->
+        <dl class="row mb-4">
+            <dt class="col-sm-4 text-muted">Plot</dt>
+            <dd class="col-sm-8 fw-semibold">@Model.Plot?.PlotDesignation</dd>
+
+            <dt class="col-sm-4 text-muted">Request Date</dt>
+            <dd class="col-sm-8">@Model.RequestDate.ToString("MMM d, yyyy")</dd>
+
+            <dt class="col-sm-4 text-muted">Current Status</dt>
+            <dd class="col-sm-8"><span class="badge @badgeClass">@Model.Status</span></dd>
+
+            <dt class="col-sm-4 text-muted">Description</dt>
+            <dd class="col-sm-8 text-truncate">@Model.Description</dd>
+        </dl>
+
+        <hr />
+
+        <form asp-action="Edit" method="post">
+            <input type="hidden" name="id" value="@Model.Id" />
+
+            <div class="mb-3">
+                <label for="status" class="form-label fw-semibold">New Status</label>
+                <select id="status" name="status" class="form-select">
+                    @foreach (var val in Enum.GetValues<WebApplication1.Models.MaintenanceStatus>())
+                    {
+                        if (val == Model.Status)
+                        {
+                            <option value="@val" selected>@val</option>
+                        }
+                        else
+                        {
+                            <option value="@val">@val</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-success">Save Status</button>
+                <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>

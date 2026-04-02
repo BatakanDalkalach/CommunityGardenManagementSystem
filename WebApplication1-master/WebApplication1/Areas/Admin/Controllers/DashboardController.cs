@@ -32,6 +32,8 @@ namespace WebApplication1.Areas.Admin.Controllers
             ViewBag.TotalMembers = await _ctx.GardenMembers.CountAsync();
             ViewBag.TotalHarvests = await _ctx.HarvestRecords.CountAsync();
             ViewBag.TotalUsers = _userManager.Users.Count();
+            ViewBag.TotalAnnouncements = await _ctx.Announcements.CountAsync();
+            ViewBag.PendingMaintenance = await _ctx.MaintenanceRequests.CountAsync(r => r.Status == MaintenanceStatus.Pending);
 
             var recentMembers = await _ctx.GardenMembers
                 .OrderByDescending(m => m.RegistrationDate)

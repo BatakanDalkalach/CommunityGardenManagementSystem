@@ -1,0 +1,42 @@
+@model WebApplication1.Models.MaintenanceRequest
+@{
+    ViewData["Title"] = "Request Details";
+    var badgeClass = Model.Status switch
+    {
+        WebApplication1.Models.MaintenanceStatus.Pending => "bg-warning text-dark",
+        WebApplication1.Models.MaintenanceStatus.InProgress => "bg-primary",
+        WebApplication1.Models.MaintenanceStatus.Completed => "bg-success",
+        _ => "bg-secondary"
+    };
+}
+
+<div class="mb-3">
+    <a asp-action="Index" class="btn btn-sm btn-outline-secondary">← Back to List</a>
+</div>
+
+<div class="card shadow-sm" style="max-width: 720px;">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <span class="fw-semibold fs-6">Request #@Model.Id — @Model.Plot?.PlotDesignation</span>
+        <span class="badge @badgeClass">@Model.Status</span>
+    </div>
+    <div class="card-body">
+        <dl class="row mb-3">
+            <dt class="col-sm-3 text-muted">Plot</dt>
+            <dd class="col-sm-9 fw-semibold">@Model.Plot?.PlotDesignation</dd>
+
+            <dt class="col-sm-3 text-muted">Request Date</dt>
+            <dd class="col-sm-9">@Model.RequestDate.ToString("dddd, MMMM d, yyyy")</dd>
+
+            <dt class="col-sm-3 text-muted">Status</dt>
+            <dd class="col-sm-9"><span class="badge @badgeClass">@Model.Status</span></dd>
+        </dl>
+
+        <hr />
+
+        <h6 class="text-muted mb-2">Description</h6>
+        <div class="bg-light border-start border-4 border-primary rounded p-3" style="white-space: pre-wrap; line-height: 1.7;">@Model.Description</div>
+    </div>
+    <div class="card-footer bg-white text-end">
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning btn-sm">Update Status</a>
+    </div>
+</div>

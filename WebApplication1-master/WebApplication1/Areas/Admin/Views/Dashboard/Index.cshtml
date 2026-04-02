@@ -2,8 +2,8 @@
     ViewData["Title"] = "Admin Dashboard";
 }
 
-<!-- Stats cards -->
-<div class="row g-3 mb-4">
+<!-- Stats cards — row 1 -->
+<div class="row g-3 mb-3">
     <div class="col-sm-6 col-lg-3">
         <div class="card text-white bg-success shadow-sm">
             <div class="card-body">
@@ -55,6 +55,53 @@
                 </div>
             </div>
         </div>
+    </div>
+</div>
+
+<!-- Stats cards — row 2 (summary statistics) -->
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-lg-4">
+        <div class="card shadow-sm border-0" style="background:#ecfdf5;">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="fs-2 fw-bold text-success">@ViewBag.TotalHarvests</div>
+                        <div class="small text-success fw-semibold">Harvest Records</div>
+                    </div>
+                    <div class="fs-1 opacity-40">🌾</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-4">
+        <div class="card shadow-sm border-0" style="background:#eff6ff;">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="fs-2 fw-bold text-primary">@ViewBag.TotalAnnouncements</div>
+                        <div class="small text-primary fw-semibold">Announcements</div>
+                    </div>
+                    <div class="fs-1 opacity-40">📢</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-4">
+        <a asp-area="Admin" asp-controller="MaintenanceRequests" asp-action="Index" asp-route-statusFilter="Pending"
+           class="text-decoration-none">
+            <div class="card shadow-sm border-0 @(ViewBag.PendingMaintenance > 0 ? "border-warning border-2" : "")"
+                 style="background:#fffbeb;">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="fs-2 fw-bold text-warning">@ViewBag.PendingMaintenance</div>
+                            <div class="small text-warning fw-semibold">Pending Maintenance</div>
+                        </div>
+                        <div class="fs-1 opacity-40">🔧</div>
+                    </div>
+                </div>
+            </div>
+        </a>
     </div>
 </div>
 
