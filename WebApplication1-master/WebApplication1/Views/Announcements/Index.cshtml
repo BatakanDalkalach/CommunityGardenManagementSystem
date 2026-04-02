@@ -1,0 +1,87 @@
+@model IEnumerable<WebApplication1.Models.Announcement>
+@{
+    ViewData["Title"] = "Announcements";
+}
+
+<style>
+    .ann-hero {
+        background: linear-gradient(135deg, #1e3a2f 0%, #2d5a3d 100%);
+        border-radius: 1rem;
+        padding: 2.5rem 2rem;
+        margin-bottom: 2rem;
+        color: white;
+        text-align: center;
+    }
+    .ann-hero-icon { font-size: 3rem; margin-bottom: 0.5rem; }
+    .ann-hero h1 { font-size: 2rem; font-weight: 900; margin: 0; }
+    .ann-hero p { margin: 0.5rem 0 0; opacity: 0.8; font-size: 1rem; }
+
+    .ann-card {
+        border: none;
+        border-radius: 0.9rem;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        transition: transform 0.15s, box-shadow 0.15s;
+        overflow: hidden;
+    }
+    .ann-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 24px rgba(0,0,0,0.13);
+    }
+    .ann-card-accent {
+        height: 5px;
+        background: linear-gradient(90deg, #1e3a2f, #4ade80);
+    }
+    .ann-date {
+        font-size: 0.82rem;
+        color: #6b7280;
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+    }
+    .ann-title { font-size: 1.25rem; font-weight: 800; color: #111827; margin: 0.5rem 0; }
+    .ann-content { color: #374151; white-space: pre-wrap; line-height: 1.7; }
+    .ann-empty {
+        text-align: center;
+        padding: 4rem 1rem;
+        color: #9ca3af;
+    }
+    .ann-empty-icon { font-size: 3.5rem; margin-bottom: 1rem; }
+</style>
+
+<div class="ann-hero">
+    <div class="ann-hero-icon">📢</div>
+    <h1>Garden Announcements</h1>
+    <p>Stay up to date with the latest news from the community garden.</p>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="ann-empty">
+        <div class="ann-empty-icon">🌱</div>
+        <h5>No announcements yet</h5>
+        <p>Check back soon for updates from the garden team.</p>
+    </div>
+}
+else
+{
+    <div class="row g-4">
+        @foreach (var item in Model)
+        {
+            <div class="col-12">
+                <div class="ann-card card">
+                    <div class="ann-card-accent"></div>
+                    <div class="card-body px-4 py-3">
+                        <div class="ann-date">
+                            <span>📅</span>
+                            <span>@item.CreatedAt.ToLocalTime().ToString("dddd, MMMM d, yyyy")</span>
+                        </div>
+                        <h2 class="ann-title">@item.Title</h2>
+                        <p class="ann-content mb-0">@item.Content</p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <p class="text-muted text-end small mt-3">Showing @Model.Count() announcement@(Model.Count() == 1 ? "" : "s")</p>
+}
