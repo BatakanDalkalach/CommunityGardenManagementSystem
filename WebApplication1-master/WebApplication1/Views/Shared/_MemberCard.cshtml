@@ -53,5 +53,7 @@
         }
 
         <a asp-controller="Members" asp-action="ViewProfile" asp-route-id="@Model.MemberId" class="cgms-profile-btn">View Profile</a>
+        <a asp-controller="Members" asp-action="Edit" asp-route-id="@Model.MemberId"
+           style="display:block;width:100%;padding:0.75rem;margin-top:0.6rem;background:#7c3aed;color:white;text-align:center;text-decoration:none;font-weight:800;border-radius:0.8rem;">✏️ Edit</a>
     </div>
 </article>

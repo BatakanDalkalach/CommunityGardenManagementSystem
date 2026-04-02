@@ -43,5 +43,19 @@ namespace WebApplication1.Services
                 .OrderBy(m => m.FullLegalName)
                 .ToListAsync();
         }
+
+        public async Task UpdateMemberAsync(GardenMember updated)
+        {
+            var existing = await _database.GardenMembers.FindAsync(updated.MemberId);
+            if (existing == null) return;
+
+            existing.FullLegalName = updated.FullLegalName;
+            existing.MembershipTier = updated.MembershipTier;
+            existing.YearsOfExperience = updated.YearsOfExperience;
+            existing.PreferOrganicOnly = updated.PreferOrganicOnly;
+            existing.GardeningInterests = updated.GardeningInterests;
+
+            await _database.SaveChangesAsync();
+        }
     }
 }

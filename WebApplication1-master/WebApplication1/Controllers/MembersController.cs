@@ -64,5 +64,32 @@ namespace WebApplication1.Controllers
             TempData["WelcomeMsg"] = $"Welcome {member.FullLegalName}! Registration successful.";
             return RedirectToAction(nameof(Index));
         }
+
+        [Authorize]
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (!id.HasValue) return NotFound();
+
+            var member = await _svc.FindMemberByIdAsync(id.Value);
+            if (member == null) return NotFound();
+
+            ViewBag.TierOptions = new[] { "Basic", "Standard", "Premium" };
+            return View(member);
+        }
+
+        [Authorize]
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(GardenMember member)
+        {
+            if (!ModelState.IsValid)
+            {
+                ViewBag.TierOptions = new[] { "Basic", "Standard", "Premium" };
+                return View(member);
+            }
+
+            await _svc.UpdateMemberAsync(member);
+            TempData["WelcomeMsg"] = $"{member.FullLegalName}'s profile updated successfully.";
+            return RedirectToAction(nameof(ViewProfile), new { id = member.MemberId });
+        }
     }
 }

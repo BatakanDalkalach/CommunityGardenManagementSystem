@@ -44,6 +44,13 @@
     </style>
 
     <div class="container">
+        @if (TempData["WelcomeMsg"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show mb-3">
+                <strong>✅</strong> @TempData["WelcomeMsg"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
         <div class="cgms-profile-wrapper">
             <div class="cgms-profile-hero">
                 <div class="cgms-hero-badge">
@@ -161,7 +168,11 @@
                     </div>
                 }
 
-                <a asp-action="Index" class="cgms-back-btn">← Return to Members</a>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-top:3rem;">
+                    <a asp-action="Index" class="cgms-back-btn" style="margin-top:0;">← Return to Members</a>
+                    <a asp-action="Edit" asp-route-id="@Model.MemberId"
+                       style="display:block;padding:1.3rem;background:linear-gradient(to right,#7c3aed,#6d28d9);color:white;text-align:center;border-radius:1rem;text-decoration:none;font-weight:900;font-size:1.2rem;">✏️ Edit Profile</a>
+                </div>
             </div>
         </div>
     </div>
