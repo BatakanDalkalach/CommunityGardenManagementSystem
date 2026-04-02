@@ -19,6 +19,7 @@ namespace WebApplication1.Models
         [DataType(DataType.MultilineText)]
         public string Description { get; set; } = string.Empty;
 
+        [Required(ErrorMessage = "Request date is required")]
         [Display(Name = "Request Date")]
         [DataType(DataType.Date)]
         public DateTime RequestDate { get; set; } = DateTime.Today;

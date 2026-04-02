@@ -9,7 +9,7 @@ namespace WebApplication1.Models
 
         // EN: Primary key of the harvest record.
         // BG: Основен ключ на записа за реколта.
-        [Required]
+        [Required(ErrorMessage = "Plot selection is required")]
         public int PlotIdentifier { get; set; }
 
         // EN: Navigation property to the associated GardenPlot entity.
@@ -17,7 +17,7 @@ namespace WebApplication1.Models
         [ForeignKey(nameof(PlotIdentifier))]
         public virtual GardenPlot? SourcePlot { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Member selection is required")]
         public int MemberId { get; set; }
 
         // EN: Foreign key referencing the member who harvested.
@@ -30,7 +30,7 @@ namespace WebApplication1.Models
         // BG: Име на събраната култура или зеленчук.
         // Трябва да бъде между 2 и 60 символа.
         [Required(ErrorMessage = "Crop name is required")]
-        [StringLength(60, MinimumLength = 2)]
+        [StringLength(60, MinimumLength = 2, ErrorMessage = "Crop name must be between 2 and 60 characters")]
         [Display(Name = "Crop/Vegetable Name")]
         public string CropName { get; set; } = string.Empty;
 
@@ -43,7 +43,7 @@ namespace WebApplication1.Models
         [Display(Name = "Quantity Harvested (kg)")]
         public double QuantityKilograms { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Harvest date is required")]
         [Display(Name = "Harvest Date")]
         [DataType(DataType.Date)]
         public DateTime CollectionDate { get; set; } = DateTime.Today;
@@ -53,7 +53,7 @@ namespace WebApplication1.Models
         [Range(1, 5, ErrorMessage = "Rating: 1 (poor) to 5 (excellent)")]
         public int QualityScore { get; set; } = 3;
 
-        [StringLength(400)]
+        [StringLength(400, ErrorMessage = "Notes cannot exceed 400 characters")]
         [Display(Name = "Observations")]
         public string? HarvestNotes { get; set; }
 

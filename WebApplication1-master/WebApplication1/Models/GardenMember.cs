@@ -17,6 +17,7 @@ namespace WebApplication1.Models
         public string EmailContact { get; set; } = string.Empty;
 
         [Required]
+        [StringLength(50, ErrorMessage = "Membership tier cannot exceed 50 characters")]
         [Display(Name = "Membership Type")]
         public string MembershipTier { get; set; } = "Basic";
 
@@ -24,6 +25,7 @@ namespace WebApplication1.Models
         [DataType(DataType.Date)]
         public DateTime RegistrationDate { get; set; } = DateTime.Today;
 
+        [Required(ErrorMessage = "Years of experience is required")]
         [Range(0, 50, ErrorMessage = "Experience: 0-50 years")]
         [Display(Name = "Gardening Experience (years)")]
         public int YearsOfExperience { get; set; }

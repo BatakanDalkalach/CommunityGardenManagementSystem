@@ -7,6 +7,7 @@ namespace WebApplication1.Models
         public int PlotIdentifier { get; set; }
 
         [Required(ErrorMessage = "Plot designation is mandatory")]
+        [StringLength(4, MinimumLength = 4, ErrorMessage = "Plot code must be exactly 4 characters (e.g., A001)")]
         [RegularExpression(@"^[A-Z]\d{3}$", ErrorMessage = "Format must be: Letter followed by 3 digits (e.g., A001)")]
         [Display(Name = "Plot Code")]
         public string PlotDesignation { get; set; } = string.Empty;
@@ -17,6 +18,7 @@ namespace WebApplication1.Models
         public double SquareMeters { get; set; }
 
         [Required]
+        [StringLength(50, ErrorMessage = "Soil type cannot exceed 50 characters")]
         [Display(Name = "Soil Quality")]
         public string SoilType { get; set; } = "Loamy";
 
@@ -26,6 +28,7 @@ namespace WebApplication1.Models
         [Display(Name = "Currently Occupied")]
         public bool IsOccupied { get; set; } = false;
 
+        [Required(ErrorMessage = "Annual fee is required")]
         [Range(0, 10000, ErrorMessage = "Fee must be between 0 and 10000")]
         [Display(Name = "Annual Fee")]
         public decimal YearlyRentalFee { get; set; }
