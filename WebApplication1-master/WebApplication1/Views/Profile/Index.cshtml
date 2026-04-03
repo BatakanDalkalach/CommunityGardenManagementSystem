@@ -1,0 +1,264 @@
+@model WebApplication1.Models.ProfileViewModel
+@{
+    ViewData["Title"] = "My Profile";
+    var member = Model.LinkedMember;
+    var totalHarvestKg = member?.RecordedHarvests?.Sum(h => h.QuantityKilograms) ?? 0;
+    var avgQuality = member?.RecordedHarvests?.Any() == true
+        ? member.RecordedHarvests.Average(h => h.QualityScore)
+        : 0;
+}
+
+<article class="cgms-myprofile-page">
+    <style>
+        .cgms-myprofile-page { background: radial-gradient(circle at top, #ecfdf5, #f3f4f6); padding: 2.5rem 1rem; min-height: 100vh; }
+        .cgms-myprofile-wrapper { max-width: 1000px; margin: 0 auto; }
+
+        /* Hero card */
+        .cgms-hero-card { background: linear-gradient(135deg, #059669, #10b981); border-radius: 1.5rem; padding: 2.5rem; color: white; display: flex; align-items: center; gap: 2rem; margin-bottom: 2rem; box-shadow: 0 12px 40px rgba(5,150,105,0.3); }
+        .cgms-hero-avatar { width: 100px; height: 100px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 3.5rem; flex-shrink: 0; border: 4px solid rgba(255,255,255,0.4); }
+        .cgms-hero-info h1 { font-size: 2rem; font-weight: 900; margin: 0 0 0.3rem; }
+        .cgms-hero-info p { margin: 0; opacity: 0.85; font-size: 1rem; }
+        .cgms-hero-badge { margin-left: auto; background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.4); padding: 0.6rem 1.4rem; border-radius: 2rem; font-weight: 800; font-size: 0.95rem; white-space: nowrap; }
+
+        /* Stats row */
+        .cgms-stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem; }
+        .cgms-stat { background: white; border-radius: 1rem; padding: 1.5rem; text-align: center; box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+        .cgms-stat-icon { font-size: 2rem; margin-bottom: 0.4rem; }
+        .cgms-stat-num { font-size: 2rem; font-weight: 900; color: #111827; line-height: 1; }
+        .cgms-stat-lbl { font-size: 0.8rem; color: #6b7280; margin-top: 0.3rem; }
+
+        /* Section cards */
+        .cgms-section { background: white; border-radius: 1.2rem; padding: 2rem; margin-bottom: 1.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+        .cgms-section-title { font-size: 1.2rem; font-weight: 800; color: #111827; margin: 0 0 1.5rem; display: flex; align-items: center; gap: 0.6rem; border-bottom: 2px solid #f3f4f6; padding-bottom: 0.8rem; }
+        .cgms-info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+        .cgms-info-item { background: #f9fafb; padding: 1rem 1.2rem; border-radius: 0.8rem; }
+        .cgms-info-label { font-size: 0.75rem; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.3rem; }
+        .cgms-info-value { font-weight: 700; color: #111827; font-size: 1rem; word-break: break-all; }
+
+        /* Plots grid */
+        .cgms-plots-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
+        .cgms-plot-card { background: #f9fafb; border: 2px solid #e5e7eb; border-radius: 1rem; padding: 1.2rem; text-decoration: none; display: block; transition: border-color 0.2s; }
+        .cgms-plot-card:hover { border-color: #10b981; }
+        .cgms-plot-code { font-size: 1.6rem; font-weight: 900; color: #059669; }
+        .cgms-plot-detail { font-size: 0.85rem; color: #6b7280; margin-top: 0.3rem; }
+
+        /* Harvest table */
+        .cgms-harvest-table { width: 100%; border-collapse: separate; border-spacing: 0 0.5rem; }
+        .cgms-harvest-table th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #9ca3af; padding: 0.5rem 0.8rem; text-align: left; }
+        .cgms-harvest-table td { background: #f9fafb; padding: 0.8rem; font-size: 0.9rem; color: #374151; }
+        .cgms-harvest-table tr td:first-child { border-radius: 0.6rem 0 0 0.6rem; }
+        .cgms-harvest-table tr td:last-child { border-radius: 0 0.6rem 0.6rem 0; }
+        .cgms-quality-stars { color: #f59e0b; }
+
+        /* No-member callout */
+        .cgms-no-member { background: linear-gradient(135deg, #fef3c7, #fde68a); border-radius: 1.2rem; padding: 2.5rem; text-align: center; }
+        .cgms-no-member h3 { font-weight: 800; color: #92400e; margin-bottom: 0.5rem; }
+        .cgms-no-member p { color: #78350f; margin-bottom: 1.5rem; }
+
+        @@media (max-width: 640px) {
+            .cgms-stats-row { grid-template-columns: repeat(2, 1fr); }
+            .cgms-info-grid { grid-template-columns: 1fr; }
+            .cgms-hero-card { flex-direction: column; text-align: center; }
+            .cgms-hero-badge { margin-left: 0; }
+        }
+    </style>
+
+    <!-- Hero Card -->
+    <div class="cgms-myprofile-wrapper">
+        <div class="cgms-hero-card">
+            <div class="cgms-hero-avatar">
+                @(member?.PreferOrganicOnly == true ? "🌿" : "👤")
+            </div>
+            <div class="cgms-hero-info">
+                <h1>@(Model.User.FullName ?? Model.User.UserName)</h1>
+                <p>📧 @Model.User.Email</p>
+                @if (member != null)
+                {
+                    <p style="margin-top:0.4rem;">
+                        @if (member.MembershipTier == "Premium") { <text>👑 Premium Member</text> }
+                        else if (member.MembershipTier == "Standard") { <text>⭐ Standard Member</text> }
+                        else { <text>🌟 Basic Member</text> }
+                    </p>
+                }
+            </div>
+            @if (member != null)
+            {
+                <span class="cgms-hero-badge">🗓 Since @member.RegistrationDate.ToString("MMM yyyy")</span>
+            }
+        </div>
+
+        <!-- Stats Row -->
+        @if (member != null)
+        {
+            <div class="cgms-stats-row">
+                <div class="cgms-stat">
+                    <div class="cgms-stat-icon">📍</div>
+                    <div class="cgms-stat-num">@(member.ManagedPlots?.Count ?? 0)</div>
+                    <div class="cgms-stat-lbl">Assigned Plots</div>
+                </div>
+                <div class="cgms-stat">
+                    <div class="cgms-stat-icon">🌾</div>
+                    <div class="cgms-stat-num">@(member.RecordedHarvests?.Count ?? 0)</div>
+                    <div class="cgms-stat-lbl">Harvests Logged</div>
+                </div>
+                <div class="cgms-stat">
+                    <div class="cgms-stat-icon">⚖️</div>
+                    <div class="cgms-stat-num">@totalHarvestKg.ToString("0.#")</div>
+                    <div class="cgms-stat-lbl">Total kg Harvested</div>
+                </div>
+                <div class="cgms-stat">
+                    <div class="cgms-stat-icon">⭐</div>
+                    <div class="cgms-stat-num">@(avgQuality > 0 ? avgQuality.ToString("0.0") : "—")</div>
+                    <div class="cgms-stat-lbl">Avg Quality Score</div>
+                </div>
+            </div>
+        }
+
+        <!-- Account Information -->
+        <div class="cgms-section">
+            <h2 class="cgms-section-title"><span>🔑</span> Account Information</h2>
+            <div class="cgms-info-grid">
+                <div class="cgms-info-item">
+                    <div class="cgms-info-label">Full Name</div>
+                    <div class="cgms-info-value">@(Model.User.FullName ?? "—")</div>
+                </div>
+                <div class="cgms-info-item">
+                    <div class="cgms-info-label">Email Address</div>
+                    <div class="cgms-info-value">@Model.User.Email</div>
+                </div>
+                <div class="cgms-info-item">
+                    <div class="cgms-info-label">Username</div>
+                    <div class="cgms-info-value">@Model.User.UserName</div>
+                </div>
+                <div class="cgms-info-item">
+                    <div class="cgms-info-label">Email Verified</div>
+                    <div class="cgms-info-value">@(Model.User.EmailConfirmed ? "✅ Verified" : "⏳ Not verified")</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Garden Member Profile -->
+        @if (member != null)
+        {
+            <div class="cgms-section">
+                <h2 class="cgms-section-title"><span>🌱</span> Garden Member Profile</h2>
+                <div class="cgms-info-grid">
+                    <div class="cgms-info-item">
+                        <div class="cgms-info-label">Member ID</div>
+                        <div class="cgms-info-value">#@member.MemberId</div>
+                    </div>
+                    <div class="cgms-info-item">
+                        <div class="cgms-info-label">Membership Tier</div>
+                        <div class="cgms-info-value">
+                            @if (member.MembershipTier == "Premium") { <text>👑 Premium</text> }
+                            else if (member.MembershipTier == "Standard") { <text>⭐ Standard</text> }
+                            else { <text>🌟 Basic</text> }
+                        </div>
+                    </div>
+                    <div class="cgms-info-item">
+                        <div class="cgms-info-label">Registration Date</div>
+                        <div class="cgms-info-value">@member.RegistrationDate.ToString("MMMM dd, yyyy")</div>
+                    </div>
+                    <div class="cgms-info-item">
+                        <div class="cgms-info-label">Gardening Experience</div>
+                        <div class="cgms-info-value">@member.YearsOfExperience year@(member.YearsOfExperience == 1 ? "" : "s")</div>
+                    </div>
+                    <div class="cgms-info-item">
+                        <div class="cgms-info-label">Organic Methods</div>
+                        <div class="cgms-info-value">@(member.PreferOrganicOnly ? "🌿 Yes, organic only" : "🌾 Mixed methods")</div>
+                    </div>
+                    @if (!string.IsNullOrEmpty(member.GardeningInterests))
+                    {
+                        <div class="cgms-info-item" style="grid-column: span 2;">
+                            <div class="cgms-info-label">Gardening Interests</div>
+                            <div class="cgms-info-value" style="font-weight: 500;">@member.GardeningInterests</div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Assigned Plots -->
+            <div class="cgms-section">
+                <h2 class="cgms-section-title"><span>🏡</span> My Plots (@(member.ManagedPlots?.Count ?? 0))</h2>
+                @if (member.ManagedPlots?.Any() == true)
+                {
+                    <div class="cgms-plots-grid">
+                        @foreach (var plot in member.ManagedPlots)
+                        {
+                            <a asp-controller="Plots" asp-action="ViewDetails" asp-route-id="@plot.PlotIdentifier" class="cgms-plot-card">
+                                <div class="cgms-plot-code">@plot.PlotDesignation</div>
+                                <div class="cgms-plot-detail">📏 @plot.SquareMeters m²</div>
+                                <div class="cgms-plot-detail">🪨 @plot.SoilType</div>
+                                <div class="cgms-plot-detail">💧 @(plot.WaterAccessAvailable ? "Water access" : "No water access")</div>
+                                <div class="cgms-plot-detail" style="margin-top:0.5rem;font-weight:700;color:#059669;">@plot.YearlyRentalFee.ToString("C")/year</div>
+                            </a>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted" style="margin:0;">No plots assigned yet.</p>
+                }
+            </div>
+
+            <!-- Harvest Records -->
+            <div class="cgms-section">
+                <h2 class="cgms-section-title"><span>🌾</span> My Harvest Records (@(member.RecordedHarvests?.Count ?? 0))</h2>
+                @if (member.RecordedHarvests?.Any() == true)
+                {
+                    <div style="overflow-x: auto;">
+                        <table class="cgms-harvest-table">
+                            <thead>
+                                <tr>
+                                    <th>Crop</th>
+                                    <th>Plot</th>
+                                    <th>Date</th>
+                                    <th>Quantity</th>
+                                    <th>Quality</th>
+                                    <th>Organic</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var h in member.RecordedHarvests.OrderByDescending(h => h.CollectionDate))
+                                {
+                                    <tr>
+                                        <td style="font-weight:700;">@h.CropName</td>
+                                        <td>@(h.SourcePlot?.PlotDesignation ?? "—")</td>
+                                        <td>@h.CollectionDate.ToString("MMM dd, yyyy")</td>
+                                        <td>@h.QuantityKilograms.ToString("0.#") kg</td>
+                                        <td>
+                                            <span class="cgms-quality-stars">
+                                                @for (int i = 1; i <= 5; i++)
+                                                {
+                                                    @(i <= h.QualityScore ? "★" : "☆")
+                                                }
+                                            </span>
+                                        </td>
+                                        <td>@(h.IsOrganicCertified ? "🌿 Yes" : "—")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted" style="margin:0;">No harvest records yet.</p>
+                }
+            </div>
+        }
+        else
+        {
+            <!-- Not linked to a garden member -->
+            <div class="cgms-no-member">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">🌱</div>
+                <h3>Not Linked to a Garden Member Profile</h3>
+                <p>Your account isn't linked to a garden member record. Register as a member to manage plots and log harvests.</p>
+                <a asp-controller="Members" asp-action="Register"
+                   style="display:inline-block;background:#d97706;color:white;padding:0.8rem 2rem;border-radius:0.8rem;text-decoration:none;font-weight:800;">
+                    Register as a Garden Member
+                </a>
+            </div>
+        }
+    </div>
+</article>
