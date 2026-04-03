@@ -146,6 +146,38 @@ app.UseStatusCodePagesWithReExecute("/Error/{0}");
 app.UseHttpsRedirection();
 // Redirect HTTP requests to HTTPS
 // Пренасочване на HTTP заявки към HTTPS
+
+// Add security headers to every response
+// Добавяне на заглавки за сигурност към всеки отговор
+app.Use(async (context, next) =>
+{
+    // Prevent MIME-type sniffing
+    context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
+
+    // Prevent the app from being embedded in iframes (clickjacking protection)
+    context.Response.Headers.Append("X-Frame-Options", "DENY");
+
+    // Content Security Policy:
+    //   script-src 'self'          – only scripts from this origin (no inline scripts, no CDNs)
+    //   style-src  'self' 'unsafe-inline' – same-origin stylesheets + inline <style> blocks used in views
+    //   img-src    'self' data:    – same-origin images and embedded data URIs
+    //   font-src   'self'          – same-origin fonts only
+    //   form-action 'self'         – forms may only submit to this origin
+    //   frame-ancestors 'none'     – redundant with X-Frame-Options but explicit for CSP-aware browsers
+    //   default-src 'self'         – catch-all for any directive not listed above
+    context.Response.Headers.Append(
+        "Content-Security-Policy",
+        "default-src 'self'; " +
+        "script-src 'self'; " +
+        "style-src 'self' 'unsafe-inline'; " +
+        "img-src 'self' data:; " +
+        "font-src 'self'; " +
+        "form-action 'self'; " +
+        "frame-ancestors 'none'");
+
+    await next();
+});
+
 app.UseRouting();
 // Enable routing
 // Активиране на маршрутизация
