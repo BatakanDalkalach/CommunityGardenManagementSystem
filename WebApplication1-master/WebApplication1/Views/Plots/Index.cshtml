@@ -50,6 +50,18 @@
         .cgms-page-link:hover { border-color: hsl(var(--primary-hue), 70%, 50%); color: hsl(var(--primary-hue), 70%, 50%); }
         .cgms-page-link.active { background: hsl(var(--primary-hue), 70%, 50%); border-color: hsl(var(--primary-hue), 70%, 50%); color: white; }
         .cgms-page-link.disabled { opacity: 0.45; pointer-events: none; }
+        @media (max-width: 575.98px) {
+            .cgms-plots-wrapper { padding: 1.5rem 0.5rem; }
+            .cgms-masthead { padding: 1.5rem 1rem; border-radius: 0.6rem; }
+            .cgms-masthead-title { font-size: 1.6rem; }
+            .cgms-metrics { gap: 1rem; flex-wrap: wrap; }
+            .cgms-metric-num { font-size: 1.4rem; }
+            .cgms-plots-grid { grid-template-columns: 1fr; gap: 1rem; }
+            .cgms-summary-bar { padding: 1rem; }
+            .cgms-search-panel { padding: 1rem; }
+            .cgms-actions-row { flex-direction: column; }
+            .cgms-action-link { flex: none; }
+        }
     </style>
 
     <div class="container">
