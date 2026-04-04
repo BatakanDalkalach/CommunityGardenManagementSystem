@@ -97,6 +97,7 @@
     </header>
     <div class="container">
         @RenderSection("PageActions", required: false)
+        <partial name="_Notifications" />
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
