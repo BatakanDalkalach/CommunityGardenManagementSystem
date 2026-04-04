@@ -3,6 +3,22 @@
 @{
     ViewData["Title"] = "System Users";
     var userRoles = ViewBag.UserRoles as Dictionary<string, IList<string>>;
+    var currentUserId = UserManager?.GetUserId(User) ?? string.Empty;
+}
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
 }
 
 <div class="card shadow-sm">
@@ -14,8 +30,9 @@
                 <tr>
                     <th>Name</th>
                     <th>Email</th>
-                    <th>Roles</th>
+                    <th>Role</th>
                     <th>Confirmed</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -24,6 +41,8 @@
                     var roles = userRoles != null && userRoles.ContainsKey(user.Id)
                         ? userRoles[user.Id]
                         : new List<string>();
+                    var isAdmin = roles.Contains("Admin");
+                    var isSelf = user.Id == User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
                     <tr>
                         <td>@(user.FullName ?? "—")</td>
                         <td>@user.Email</td>
@@ -41,6 +60,24 @@
                             else
                             {
                                 <span class="text-muted">—</span>
+                            }
+                        </td>
+                        <td>
+                            @if (isSelf)
+                            {
+                                <span class="text-muted small">—</span>
+                            }
+                            else
+                            {
+                                <form asp-action="ToggleRole" asp-controller="Dashboard" asp-area="Admin" method="post" class="d-inline">
+                                    <input type="hidden" name="userId" value="@user.Id" />
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit"
+                                            class="btn btn-sm @(isAdmin ? "btn-outline-secondary" : "btn-outline-danger")"
+                                            onclick="return confirm('@(isAdmin ? $"Demote {user.Email} to User?" : $"Promote {user.Email} to Admin?")')">
+                                        @(isAdmin ? "Demote to User" : "Promote to Admin")
+                                    </button>
+                                </form>
                             }
                         </td>
                     </tr>

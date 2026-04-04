@@ -67,5 +67,40 @@ namespace WebApplication1.Areas.Admin.Controllers
             ViewBag.UserRoles = userRoles;
             return View(users);
         }
+
+        // POST: /Admin/Dashboard/ToggleRole
+        // Promotes a User to Admin or demotes an Admin back to User.
+        // Promotes/demotes сменя ролята на потребителя между Admin и User.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ToggleRole(string userId)
+        {
+            var target = await _userManager.FindByIdAsync(userId);
+            if (target == null)
+                return NotFound();
+
+            // Prevent an admin from changing their own role
+            var currentUserId = _userManager.GetUserId(User);
+            if (target.Id == currentUserId)
+            {
+                TempData["Error"] = "You cannot change your own role.";
+                return RedirectToAction(nameof(Users));
+            }
+
+            if (await _userManager.IsInRoleAsync(target, "Admin"))
+            {
+                await _userManager.RemoveFromRoleAsync(target, "Admin");
+                await _userManager.AddToRoleAsync(target, "User");
+                TempData["Success"] = $"{target.Email} has been demoted to User.";
+            }
+            else
+            {
+                await _userManager.RemoveFromRoleAsync(target, "User");
+                await _userManager.AddToRoleAsync(target, "Admin");
+                TempData["Success"] = $"{target.Email} has been promoted to Admin.";
+            }
+
+            return RedirectToAction(nameof(Users));
+        }
     }
 }
