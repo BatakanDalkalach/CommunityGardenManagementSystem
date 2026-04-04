@@ -1,0 +1,161 @@
+@{
+    ViewData["Title"] = "About";
+    ViewData["MetaDescription"] = "About the Community Garden Management System – a web application for managing garden plots, members, harvests, and maintenance requests.";
+}
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-9 mx-auto">
+
+            <h1 class="display-4 mb-2">About CGMS</h1>
+            <p class="lead text-muted mb-5">Community Garden Management System</p>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h2 class="h5 mb-3">What is CGMS?</h2>
+                    <p>The <strong>Community Garden Management System</strong> (CGMS) is a web application designed to help community garden organisations manage their day-to-day operations. It provides a central hub for garden coordinators and members to track plots, record harvests, log maintenance issues, and share announcements — all from a single, accessible interface.</p>
+                    <p class="mb-0">The project was built as a learning exercise in full-stack ASP.NET Core MVC development, with an emphasis on clean architecture, role-based access control, and a good user experience.</p>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h2 class="h5 mb-3">Features</h2>
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <div class="d-flex gap-2">
+                                <span class="fs-5">🌱</span>
+                                <div>
+                                    <strong>Plot Management</strong>
+                                    <p class="mb-0 text-muted small">Add, edit, and remove garden plots. Assign plots to members and track their status.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="d-flex gap-2">
+                                <span class="fs-5">👥</span>
+                                <div>
+                                    <strong>Member Directory</strong>
+                                    <p class="mb-0 text-muted small">Register members, view profiles, and manage membership details.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="d-flex gap-2">
+                                <span class="fs-5">🥕</span>
+                                <div>
+                                    <strong>Harvest Records</strong>
+                                    <p class="mb-0 text-muted small">Log and track produce harvested from each plot throughout the season.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="d-flex gap-2">
+                                <span class="fs-5">🔧</span>
+                                <div>
+                                    <strong>Maintenance Requests</strong>
+                                    <p class="mb-0 text-muted small">Submit and manage maintenance issues. Admins can update request status and priority.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="d-flex gap-2">
+                                <span class="fs-5">📢</span>
+                                <div>
+                                    <strong>Announcements</strong>
+                                    <p class="mb-0 text-muted small">Admins can publish announcements to keep the community informed.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="d-flex gap-2">
+                                <span class="fs-5">📊</span>
+                                <div>
+                                    <strong>Statistics</strong>
+                                    <p class="mb-0 text-muted small">Visualise plot occupancy, harvest totals, and maintenance data with charts.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="d-flex gap-2">
+                                <span class="fs-5">🔐</span>
+                                <div>
+                                    <strong>Role-based Access</strong>
+                                    <p class="mb-0 text-muted small">Separate Admin and User roles with a dedicated admin area for privileged operations.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="d-flex gap-2">
+                                <span class="fs-5">👤</span>
+                                <div>
+                                    <strong>User Profiles</strong>
+                                    <p class="mb-0 text-muted small">Each registered user has an editable profile linked to their garden activity.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h2 class="h5 mb-3">Technology Stack</h2>
+                    <div class="table-responsive">
+                        <table class="table table-sm mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Layer</th>
+                                    <th>Technology</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Framework</td>
+                                    <td>ASP.NET Core 8 MVC</td>
+                                </tr>
+                                <tr>
+                                    <td>Language</td>
+                                    <td>C# 12</td>
+                                </tr>
+                                <tr>
+                                    <td>ORM</td>
+                                    <td>Entity Framework Core 8</td>
+                                </tr>
+                                <tr>
+                                    <td>Database</td>
+                                    <td>SQL Server (LocalDB for development)</td>
+                                </tr>
+                                <tr>
+                                    <td>Authentication</td>
+                                    <td>ASP.NET Core Identity</td>
+                                </tr>
+                                <tr>
+                                    <td>Frontend</td>
+                                    <td>Bootstrap 5, Razor Views</td>
+                                </tr>
+                                <tr>
+                                    <td>Charts</td>
+                                    <td>Chart.js</td>
+                                </tr>
+                                <tr>
+                                    <td>Testing</td>
+                                    <td>xUnit, Moq</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h2 class="h5 mb-3">Project Information</h2>
+                    <p>CGMS is an open learning project. The source code follows standard ASP.NET Core MVC conventions with Areas used to isolate the admin interface from the public-facing site.</p>
+                    <p class="mb-0">For privacy information, see the <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy Policy</a>.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

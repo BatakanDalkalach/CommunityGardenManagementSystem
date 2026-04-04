@@ -1,48 +1,96 @@
-﻿@{
+@{
     ViewData["Title"] = "Privacy Policy";
+    ViewData["MetaDescription"] = "Privacy Policy for Community Garden Management System – learn how we collect, use, and protect your personal data.";
 }
 
 <div class="container py-5">
     <div class="row">
         <div class="col-lg-8 mx-auto">
-            <h1 class="display-4 mb-4">@ViewData["Title"]</h1>
-            
+            <h1 class="display-4 mb-2">@ViewData["Title"]</h1>
+            <p class="text-muted mb-5">Last updated: April 2026</p>
+
             <div class="card shadow-sm mb-4">
                 <div class="card-body">
-                    <h3 class="h5 mb-3">Information We Collect</h3>
-                    <p>At Community Garden Management System, we collect only the information necessary to provide our services:</p>
+                    <h2 class="h5 mb-3">1. Information We Collect</h2>
+                    <p>When you register and use the Community Garden Management System (CGMS), we collect the following personal information:</p>
                     <ul>
-                        <li>Member registration information (name, email, contact details)</li>
-                        <li>Garden plot assignments and preferences</li>
-                        <li>Harvest records and garden activity data</li>
+                        <li><strong>Account data:</strong> name, email address, and password (stored as a secure hash)</li>
+                        <li><strong>Profile information:</strong> contact details and any optional bio you provide</li>
+                        <li><strong>Garden activity data:</strong> plot assignments, harvest records, and maintenance requests you submit</li>
+                        <li><strong>Usage data:</strong> pages visited and actions taken within the application, collected for operational purposes only</li>
                     </ul>
+                    <p class="mb-0">We do not collect payment information, location data, or any sensitive personal categories defined under GDPR.</p>
                 </div>
             </div>
 
             <div class="card shadow-sm mb-4">
                 <div class="card-body">
-                    <h3 class="h5 mb-3">How We Use Your Information</h3>
-                    <p>Your information is used exclusively for:</p>
+                    <h2 class="h5 mb-3">2. How We Use Your Information</h2>
+                    <p>Your data is used exclusively to operate the garden management platform:</p>
                     <ul>
-                        <li>Managing your garden plot assignments</li>
-                        <li>Coordinating community garden activities</li>
-                        <li>Communicating important updates and maintenance schedules</li>
-                        <li>Tracking harvest records for community reports</li>
+                        <li>Creating and managing your member account and garden plot assignments</li>
+                        <li>Displaying your harvest records and maintenance request history</li>
+                        <li>Sending administrative announcements relevant to the community garden</li>
+                        <li>Generating anonymised aggregate statistics (e.g. total plots, harvest totals) visible on the Statistics page</li>
+                        <li>Enabling administrators to manage memberships and respond to maintenance requests</li>
                     </ul>
+                    <p class="mb-0">We do not sell, rent, or trade your personal information to third parties.</p>
                 </div>
             </div>
 
             <div class="card shadow-sm mb-4">
                 <div class="card-body">
-                    <h3 class="h5 mb-3">Data Security</h3>
-                    <p>We implement appropriate security measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction.</p>
+                    <h2 class="h5 mb-3">3. Cookies &amp; Session Data</h2>
+                    <p>CGMS uses the following types of cookies:</p>
+                    <ul>
+                        <li><strong>Essential session cookies:</strong> Required to keep you logged in during your visit. These are deleted when you close your browser or log out.</li>
+                        <li><strong>Anti-forgery tokens:</strong> Short-lived cookies used to protect form submissions against cross-site request forgery (CSRF) attacks.</li>
+                        <li><strong>TempData cookies:</strong> Used to display one-time notification messages (e.g. "Plot added successfully") after a page redirect.</li>
+                    </ul>
+                    <p class="mb-0">We do not use advertising, analytics, or third-party tracking cookies.</p>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h2 class="h5 mb-3">4. Data Storage &amp; Security</h2>
+                    <p>Your data is stored in a local SQL Server database managed by the garden administration. We implement the following security measures:</p>
+                    <ul>
+                        <li>Passwords are hashed using ASP.NET Core Identity (PBKDF2 with HMAC-SHA256)</li>
+                        <li>All form submissions are protected against CSRF with anti-forgery tokens</li>
+                        <li>Access to sensitive administrative features is restricted by role-based authorisation</li>
+                        <li>The application is served over HTTPS to encrypt data in transit</li>
+                    </ul>
+                    <p class="mb-0">While we take reasonable precautions, no system is completely secure. Please use a strong, unique password for your account.</p>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h2 class="h5 mb-3">5. Your Rights</h2>
+                    <p>As a registered member you have the right to:</p>
+                    <ul>
+                        <li><strong>Access</strong> the personal data we hold about you (visible on your Profile page)</li>
+                        <li><strong>Correct</strong> inaccurate data via the Edit Profile page</li>
+                        <li><strong>Request deletion</strong> of your account and associated personal data by contacting a garden administrator</li>
+                        <li><strong>Object</strong> to the processing of your data for purposes beyond managing your garden membership</li>
+                    </ul>
+                    <p class="mb-0">Requests are handled within 30 days. Deleting your account will remove your personal details but harvest and maintenance records may be retained in anonymised form for community reporting.</p>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h2 class="h5 mb-3">6. Data Retention</h2>
+                    <p>We retain your personal data for as long as your account is active. If you request account deletion, your personal details are removed within 30 days. Anonymised aggregate data (harvest totals, plot statistics) may be retained indefinitely for community record-keeping.</p>
                 </div>
             </div>
 
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <h3 class="h5 mb-3">Contact Us</h3>
-                    <p>If you have any questions about this Privacy Policy, please contact us through the community garden office.</p>
+                    <h2 class="h5 mb-3">7. Contact</h2>
+                    <p>If you have questions about this Privacy Policy or wish to exercise your data rights, please contact the garden administration office directly or reach an administrator through the system.</p>
+                    <p class="mb-0">For technical enquiries about the platform, see the <a asp-area="" asp-controller="Home" asp-action="About">About</a> page.</p>
                 </div>
             </div>
         </div>
