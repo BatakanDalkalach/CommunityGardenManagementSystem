@@ -1,6 +1,11 @@
 @model IEnumerable<WebApplication1.Models.GardenMember>
 @{
     ViewData["Title"] = "Community Members";
+    ViewData["MetaDescription"] = "Browse the Community Garden Management System member directory. View profiles, membership tiers, assigned plots and contact information for all gardeners.";
+}
+
+@section Head {
+    <meta name="keywords" content="community members, garden members, membership, gardeners directory" />
 }
 
 @section PageActions {

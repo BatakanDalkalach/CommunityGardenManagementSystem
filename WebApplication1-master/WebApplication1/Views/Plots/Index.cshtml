@@ -1,6 +1,11 @@
 @model IEnumerable<WebApplication1.Models.GardenPlot>
 @{
-    ViewData["Title"] = "Garden Plots Gallery";
+    ViewData["Title"] = "Garden Plots";
+    ViewData["MetaDescription"] = "Browse and manage all garden plots in the Community Garden Management System. Search by designation or soil type and view plot availability and tenant details.";
+}
+
+@section Head {
+    <meta name="keywords" content="garden plots, plot management, soil type, community garden" />
 }
 
 @section PageActions {

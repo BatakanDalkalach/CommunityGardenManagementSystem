@@ -1,6 +1,11 @@
 @model IEnumerable<WebApplication1.Models.Announcement>
 @{
     ViewData["Title"] = "Announcements";
+    ViewData["MetaDescription"] = "Stay up to date with the latest news and announcements from the Community Garden Management System. Read notices, event updates, and garden team messages.";
+}
+
+@section Head {
+    <meta name="keywords" content="garden announcements, community news, garden updates, notices" />
 }
 
 <style>
