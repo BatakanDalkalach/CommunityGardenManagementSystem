@@ -43,6 +43,29 @@ namespace WebApplication1.Controllers
             return View(allPlots.Skip((page - 1) * pageSize).Take(pageSize).ToList());
         }
 
+        public async Task<IActionResult> Statistics()
+        {
+            var plots = await _svc.RetrieveAllPlotsAsync();
+
+            var vm = new PlotStatisticsViewModel
+            {
+                TotalPlots = plots.Count,
+                OccupiedCount = plots.Count(p => p.IsOccupied),
+                FreeCount = plots.Count(p => !p.IsOccupied),
+                AveragePlotSize = plots.Count > 0 ? Math.Round(plots.Average(p => p.SquareMeters), 1) : 0,
+                MostCommonSoilType = plots.Count > 0
+                    ? plots.GroupBy(p => p.SoilType).OrderByDescending(g => g.Count()).First().Key
+                    : "N/A",
+                TotalRentalIncome = plots.Where(p => p.IsOccupied).Sum(p => p.YearlyRentalFee),
+                PlotsBySoilType = plots
+                    .GroupBy(p => p.SoilType)
+                    .OrderByDescending(g => g.Count())
+                    .ToDictionary(g => g.Key, g => g.Count())
+            };
+
+            return View(vm);
+        }
+
         public async Task<IActionResult> ViewDetails(int? id)
         {
             if (!id.HasValue) return NotFound();

@@ -1,0 +1,248 @@
+@model WebApplication1.Models.PlotStatisticsViewModel
+@{
+    ViewData["Title"] = "Plot Statistics";
+    var soilLabels  = System.Text.Json.JsonSerializer.Serialize(Model.PlotsBySoilType.Keys.ToList());
+    var soilCounts  = System.Text.Json.JsonSerializer.Serialize(Model.PlotsBySoilType.Values.ToList());
+    double occupiedPct = Model.TotalPlots > 0 ? Math.Round((double)Model.OccupiedCount / Model.TotalPlots * 100, 1) : 0;
+}
+
+<article class="cgms-stats-wrapper">
+    <style>
+        .cgms-stats-wrapper { background: hsl(140,20%,96%); padding: 3rem 1rem; min-height: 100vh; }
+        .cgms-stats-masthead { background: linear-gradient(120deg, #059669, #0284c7); padding: 2.5rem; border-radius: 1rem; color: white; margin-bottom: 2rem; }
+        .cgms-stats-masthead h1 { font-size: 2.5rem; font-weight: 900; margin: 0 0 0.4rem 0; }
+        .cgms-stats-masthead p { margin: 0; opacity: 0.9; font-size: 1.1rem; }
+        /* KPI cards */
+        .cgms-kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.4rem; margin-bottom: 2.5rem; }
+        .cgms-kpi-card { background: white; border-radius: 0.9rem; padding: 1.6rem 1.8rem; box-shadow: 0 4px 14px rgba(0,0,0,0.08); display: flex; flex-direction: column; gap: 0.5rem; }
+        .cgms-kpi-icon { font-size: 2rem; line-height: 1; }
+        .cgms-kpi-value { font-size: 2.2rem; font-weight: 900; line-height: 1.1; }
+        .cgms-kpi-label { font-size: 0.95rem; color: #6b7280; font-weight: 600; }
+        .cgms-kpi-card.total   .cgms-kpi-value { color: #0284c7; }
+        .cgms-kpi-card.occupied .cgms-kpi-value { color: #d97706; }
+        .cgms-kpi-card.free    .cgms-kpi-value { color: #059669; }
+        .cgms-kpi-card.size    .cgms-kpi-value { color: #7c3aed; }
+        .cgms-kpi-card.soil    .cgms-kpi-value { color: #b45309; font-size: 1.5rem; }
+        .cgms-kpi-card.income  .cgms-kpi-value { color: #16a34a; }
+        /* charts row */
+        .cgms-charts-row { display: grid; grid-template-columns: 1fr 2fr; gap: 1.6rem; margin-bottom: 2.5rem; }
+        .cgms-chart-card { background: white; border-radius: 0.9rem; padding: 1.8rem; box-shadow: 0 4px 14px rgba(0,0,0,0.08); }
+        .cgms-chart-card h2 { font-size: 1.15rem; font-weight: 800; color: #1f2937; margin-bottom: 1.2rem; }
+        .chart-container { position: relative; }
+        /* occupancy progress bar */
+        .cgms-occupancy-bar-wrap { margin-top: 1rem; }
+        .cgms-occ-bar { height: 1.4rem; border-radius: 0.7rem; background: #e5e7eb; overflow: hidden; }
+        .cgms-occ-fill { height: 100%; border-radius: 0.7rem; background: linear-gradient(90deg, #f59e0b, #d97706); transition: width 0.8s ease; }
+        .cgms-occ-labels { display: flex; justify-content: space-between; font-size: 0.88rem; color: #6b7280; margin-top: 0.35rem; font-weight: 600; }
+        /* soil table */
+        .cgms-soil-table { width: 100%; border-collapse: collapse; }
+        .cgms-soil-table th { text-align: left; padding: 0.6rem 0.8rem; font-size: 0.88rem; color: #6b7280; font-weight: 700; border-bottom: 2px solid #e5e7eb; }
+        .cgms-soil-table td { padding: 0.65rem 0.8rem; border-bottom: 1px solid #f3f4f6; font-weight: 600; color: #1f2937; }
+        .cgms-soil-bar-cell { width: 45%; }
+        .cgms-soil-bar-bg { background: #f3f4f6; border-radius: 0.4rem; height: 0.8rem; overflow: hidden; }
+        .cgms-soil-bar-fill { height: 100%; border-radius: 0.4rem; background: linear-gradient(90deg, #059669, #0284c7); }
+        .back-link { display: inline-flex; align-items: center; gap: 0.5rem; color: #0284c7; font-weight: 700; text-decoration: none; margin-bottom: 1.5rem; }
+        .back-link:hover { color: #0369a1; text-decoration: underline; }
+        @@media (max-width: 767.98px) {
+            .cgms-stats-masthead h1 { font-size: 1.6rem; }
+            .cgms-charts-row { grid-template-columns: 1fr; }
+            .cgms-kpi-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @@media (max-width: 479.98px) {
+            .cgms-kpi-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+
+    <div class="container">
+        <a asp-action="Index" class="back-link">&#8592; Back to Plots</a>
+
+        <header class="cgms-stats-masthead">
+            <h1>&#128202; Plot Statistics</h1>
+            <p>Aggregate overview of all garden plots in the system</p>
+        </header>
+
+        <!-- KPI Cards -->
+        <div class="cgms-kpi-grid">
+            <div class="cgms-kpi-card total">
+                <span class="cgms-kpi-icon">&#127807;</span>
+                <span class="cgms-kpi-value">@Model.TotalPlots</span>
+                <span class="cgms-kpi-label">Total Plots</span>
+            </div>
+            <div class="cgms-kpi-card occupied">
+                <span class="cgms-kpi-icon">&#128100;</span>
+                <span class="cgms-kpi-value">@Model.OccupiedCount</span>
+                <span class="cgms-kpi-label">Occupied Plots</span>
+            </div>
+            <div class="cgms-kpi-card free">
+                <span class="cgms-kpi-icon">&#10003;</span>
+                <span class="cgms-kpi-value">@Model.FreeCount</span>
+                <span class="cgms-kpi-label">Available Plots</span>
+            </div>
+            <div class="cgms-kpi-card size">
+                <span class="cgms-kpi-icon">&#128207;</span>
+                <span class="cgms-kpi-value">@Model.AveragePlotSize <small style="font-size:1rem">m&#178;</small></span>
+                <span class="cgms-kpi-label">Avg Plot Size</span>
+            </div>
+            <div class="cgms-kpi-card soil">
+                <span class="cgms-kpi-icon">&#127758;</span>
+                <span class="cgms-kpi-value">@Model.MostCommonSoilType</span>
+                <span class="cgms-kpi-label">Most Common Soil</span>
+            </div>
+            <div class="cgms-kpi-card income">
+                <span class="cgms-kpi-icon">&#128176;</span>
+                <span class="cgms-kpi-value">&#163;@Model.TotalRentalIncome.ToString("N0")</span>
+                <span class="cgms-kpi-label">Total Annual Rental Income</span>
+            </div>
+        </div>
+
+        <!-- Charts row -->
+        <div class="cgms-charts-row">
+            <!-- Doughnut: occupied vs free -->
+            <div class="cgms-chart-card">
+                <h2>&#128308; Occupancy Breakdown</h2>
+                @if (Model.TotalPlots > 0)
+                {
+                    <div class="chart-container" style="max-width:280px;margin:0 auto;">
+                        <canvas id="occupancyChart"></canvas>
+                    </div>
+                    <div class="cgms-occupancy-bar-wrap">
+                        <div class="cgms-occ-bar">
+                            <div class="cgms-occ-fill" style="width:@occupiedPct%"></div>
+                        </div>
+                        <div class="cgms-occ-labels">
+                            <span>&#128308; @Model.OccupiedCount occupied (@occupiedPct%)</span>
+                            <span>&#128994; @Model.FreeCount free</span>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted text-center mt-4">No plots yet.</p>
+                }
+            </div>
+
+            <!-- Bar: plots by soil type -->
+            <div class="cgms-chart-card">
+                <h2>&#127758; Plots by Soil Type</h2>
+                @if (Model.PlotsBySoilType.Any())
+                {
+                    <div class="chart-container" style="height:260px;">
+                        <canvas id="soilChart"></canvas>
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted text-center mt-4">No data available.</p>
+                }
+            </div>
+        </div>
+
+        <!-- Soil type breakdown table -->
+        @if (Model.PlotsBySoilType.Any())
+        {
+            <div class="cgms-chart-card" style="margin-bottom:2rem;">
+                <h2>&#128203; Soil Type Breakdown</h2>
+                <table class="cgms-soil-table">
+                    <thead>
+                        <tr>
+                            <th>Soil Type</th>
+                            <th>Plots</th>
+                            <th>Share</th>
+                            <th class="cgms-soil-bar-cell"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            int maxCount = Model.PlotsBySoilType.Values.Max();
+                        }
+                        @foreach (var entry in Model.PlotsBySoilType)
+                        {
+                            double barPct = maxCount > 0 ? Math.Round((double)entry.Value / maxCount * 100, 1) : 0;
+                            double sharePct = Model.TotalPlots > 0 ? Math.Round((double)entry.Value / Model.TotalPlots * 100, 1) : 0;
+                            <tr>
+                                <td>@entry.Key</td>
+                                <td>@entry.Value</td>
+                                <td>@sharePct%</td>
+                                <td class="cgms-soil-bar-cell">
+                                    <div class="cgms-soil-bar-bg">
+                                        <div class="cgms-soil-bar-fill" style="width:@barPct%"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</article>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+        (function () {
+            // Occupancy doughnut
+            var occCtx = document.getElementById('occupancyChart');
+            if (occCtx) {
+                new Chart(occCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Occupied', 'Available'],
+                        datasets: [{
+                            data: [@Model.OccupiedCount, @Model.FreeCount],
+                            backgroundColor: ['#f59e0b', '#10b981'],
+                            borderWidth: 3,
+                            borderColor: '#fff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { position: 'bottom', labels: { font: { weight: 'bold' } } }
+                        },
+                        cutout: '62%'
+                    }
+                });
+            }
+
+            // Soil type bar chart
+            var soilCtx = document.getElementById('soilChart');
+            if (soilCtx) {
+                var labels = @Html.Raw(soilLabels);
+                var counts = @Html.Raw(soilCounts);
+                var palette = ['#059669','#0284c7','#7c3aed','#d97706','#dc2626','#0891b2','#65a30d','#c026d3'];
+                new Chart(soilCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Number of Plots',
+                            data: counts,
+                            backgroundColor: labels.map(function(_, i) { return palette[i % palette.length]; }),
+                            borderRadius: 6,
+                            borderSkipped: false
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { stepSize: 1, font: { weight: 'bold' } },
+                                grid: { color: '#f3f4f6' }
+                            },
+                            x: {
+                                ticks: { font: { weight: 'bold' } },
+                                grid: { display: false }
+                            }
+                        }
+                    }
+                });
+            }
+        })();
+    </script>
+}
