@@ -158,20 +158,22 @@ app.Use(async (context, next) =>
     context.Response.Headers.Append("X-Frame-Options", "DENY");
 
     // Content Security Policy:
-    //   script-src 'self'          – only scripts from this origin (no inline scripts, no CDNs)
+    //   script-src 'self' 'unsafe-inline' – same-origin scripts + inline <script> blocks used in views
     //   style-src  'self' 'unsafe-inline' – same-origin stylesheets + inline <style> blocks used in views
-    //   img-src    'self' data:    – same-origin images and embedded data URIs
-    //   font-src   'self'          – same-origin fonts only
-    //   form-action 'self'         – forms may only submit to this origin
-    //   frame-ancestors 'none'     – redundant with X-Frame-Options but explicit for CSP-aware browsers
-    //   default-src 'self'         – catch-all for any directive not listed above
+    //   img-src    'self' data:           – same-origin images and embedded data URIs
+    //   font-src   'self'                 – same-origin fonts only
+    //   connect-src 'self' ws: wss:       – fetch()/XHR to same origin + WebSocket for browser dev refresh
+    //   form-action 'self'                – forms may only submit to this origin
+    //   frame-ancestors 'none'            – redundant with X-Frame-Options but explicit for CSP-aware browsers
+    //   default-src 'self'                – catch-all for any directive not listed above
     context.Response.Headers.Append(
         "Content-Security-Policy",
         "default-src 'self'; " +
-        "script-src 'self'; " +
+        "script-src 'self' 'unsafe-inline'; " +
         "style-src 'self' 'unsafe-inline'; " +
         "img-src 'self' data:; " +
         "font-src 'self'; " +
+        "connect-src 'self' ws: wss:; " +
         "form-action 'self'; " +
         "frame-ancestors 'none'");
 
