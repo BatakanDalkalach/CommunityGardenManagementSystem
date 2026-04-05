@@ -49,12 +49,19 @@ namespace WebApplication1.Areas.Admin.Controllers
         {
             if (!ModelState.IsValid) return View(announcement);
 
-            announcement.CreatedAt = DateTime.UtcNow;
-            _ctx.Announcements.Add(announcement);
-            await _ctx.SaveChangesAsync();
-
-            TempData["SuccessMsg"] = "Announcement created successfully!";
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                announcement.CreatedAt = DateTime.UtcNow;
+                _ctx.Announcements.Add(announcement);
+                await _ctx.SaveChangesAsync();
+                TempData["SuccessMsg"] = "Announcement created successfully!";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (DbUpdateException)
+            {
+                ModelState.AddModelError(string.Empty, "Unable to create the announcement. Please try again.");
+                return View(announcement);
+            }
         }
 
         // GET: /Admin/Announcements/Edit/5
@@ -103,14 +110,20 @@ namespace WebApplication1.Areas.Admin.Controllers
         [HttpPost, ActionName("Delete"), ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var announcement = await _ctx.Announcements.FindAsync(id);
-            if (announcement != null)
+            try
             {
-                _ctx.Announcements.Remove(announcement);
-                await _ctx.SaveChangesAsync();
+                var announcement = await _ctx.Announcements.FindAsync(id);
+                if (announcement != null)
+                {
+                    _ctx.Announcements.Remove(announcement);
+                    await _ctx.SaveChangesAsync();
+                }
+                TempData["SuccessMsg"] = "Announcement deleted successfully!";
             }
-
-            TempData["SuccessMsg"] = "Announcement deleted successfully!";
+            catch (DbUpdateException)
+            {
+                TempData["ErrorMsg"] = "Unable to delete this announcement.";
+            }
             return RedirectToAction(nameof(Index));
         }
     }

@@ -87,17 +87,24 @@ namespace WebApplication1.Areas.Admin.Controllers
                 return RedirectToAction(nameof(Users));
             }
 
-            if (await _userManager.IsInRoleAsync(target, "Admin"))
+            try
             {
-                await _userManager.RemoveFromRoleAsync(target, "Admin");
-                await _userManager.AddToRoleAsync(target, "User");
-                TempData["Success"] = $"{target.Email} has been demoted to User.";
+                if (await _userManager.IsInRoleAsync(target, "Admin"))
+                {
+                    await _userManager.RemoveFromRoleAsync(target, "Admin");
+                    await _userManager.AddToRoleAsync(target, "User");
+                    TempData["Success"] = $"{target.Email} has been demoted to User.";
+                }
+                else
+                {
+                    await _userManager.RemoveFromRoleAsync(target, "User");
+                    await _userManager.AddToRoleAsync(target, "Admin");
+                    TempData["Success"] = $"{target.Email} has been promoted to Admin.";
+                }
             }
-            else
+            catch (Exception)
             {
-                await _userManager.RemoveFromRoleAsync(target, "User");
-                await _userManager.AddToRoleAsync(target, "Admin");
-                TempData["Success"] = $"{target.Email} has been promoted to Admin.";
+                TempData["Error"] = "Unable to update the user's role. Please try again.";
             }
 
             return RedirectToAction(nameof(Users));

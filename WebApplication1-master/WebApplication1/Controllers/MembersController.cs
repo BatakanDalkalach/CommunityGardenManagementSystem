@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using WebApplication1.Models;
 using WebApplication1.Services;
 
@@ -60,9 +61,18 @@ namespace WebApplication1.Controllers
                 return View(member);
             }
 
-            await _svc.EnrollNewMemberAsync(member);
-            TempData["WelcomeMsg"] = $"Welcome {member.FullLegalName}! Registration successful.";
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                await _svc.EnrollNewMemberAsync(member);
+                TempData["WelcomeMsg"] = $"Welcome {member.FullLegalName}! Registration successful.";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (DbUpdateException)
+            {
+                ModelState.AddModelError(nameof(member.EmailContact), "That email address is already registered.");
+                ViewBag.TierOptions = new[] { "Basic", "Standard", "Premium" };
+                return View(member);
+            }
         }
 
         public async Task<IActionResult> Statistics()
@@ -117,9 +127,18 @@ namespace WebApplication1.Controllers
                 return View(member);
             }
 
-            await _svc.UpdateMemberAsync(member);
-            TempData["WelcomeMsg"] = $"{member.FullLegalName}'s profile updated successfully.";
-            return RedirectToAction(nameof(ViewProfile), new { id = member.MemberId });
+            try
+            {
+                await _svc.UpdateMemberAsync(member);
+                TempData["WelcomeMsg"] = $"{member.FullLegalName}'s profile updated successfully.";
+                return RedirectToAction(nameof(ViewProfile), new { id = member.MemberId });
+            }
+            catch (DbUpdateException)
+            {
+                ModelState.AddModelError(string.Empty, "Unable to save changes. Please try again.");
+                ViewBag.TierOptions = new[] { "Basic", "Standard", "Premium" };
+                return View(member);
+            }
         }
     }
 }

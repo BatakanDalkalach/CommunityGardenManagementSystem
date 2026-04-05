@@ -93,9 +93,18 @@ namespace WebApplication1.Controllers
                 return View(entity);
             }
 
-            await _svc.RegisterNewPlotAsync(entity);
-            TempData["SuccessMsg"] = "Plot successfully added!";
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                await _svc.RegisterNewPlotAsync(entity);
+                TempData["SuccessMsg"] = "Plot successfully added!";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (DbUpdateException)
+            {
+                ModelState.AddModelError(nameof(entity.PlotDesignation), "That plot designation is already in use.");
+                LoadMemberOptions(entity.AssignedGardenerId);
+                return View(entity);
+            }
         }
 
         [Authorize]
@@ -148,8 +157,15 @@ namespace WebApplication1.Controllers
         [HttpPost, ActionName("Remove"), ValidateAntiForgeryToken]
         public async Task<IActionResult> ConfirmRemoval(int id)
         {
-            await _svc.RemovePlotAsync(id);
-            TempData["SuccessMsg"] = "Plot removed successfully!";
+            try
+            {
+                await _svc.RemovePlotAsync(id);
+                TempData["SuccessMsg"] = "Plot removed successfully!";
+            }
+            catch (DbUpdateException)
+            {
+                TempData["ErrorMsg"] = "Cannot remove this plot because it has related records.";
+            }
             return RedirectToAction(nameof(Index));
         }
 

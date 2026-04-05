@@ -74,11 +74,19 @@ namespace WebApplication1.Controllers
                 return View(record);
             }
 
-            _ctx.HarvestRecords.Add(record);
-            await _ctx.SaveChangesAsync();
-
-            TempData["SuccessMsg"] = $"Harvest of {record.CropName} logged successfully!";
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                _ctx.HarvestRecords.Add(record);
+                await _ctx.SaveChangesAsync();
+                TempData["SuccessMsg"] = $"Harvest of {record.CropName} logged successfully!";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (DbUpdateException)
+            {
+                ModelState.AddModelError(string.Empty, "Unable to save the harvest record. Please check your inputs and try again.");
+                LoadDropdowns(record.PlotIdentifier, record.MemberId);
+                return View(record);
+            }
         }
 
         [Authorize]
@@ -138,14 +146,20 @@ namespace WebApplication1.Controllers
         [HttpPost, ActionName("Delete"), ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var record = await _ctx.HarvestRecords.FindAsync(id);
-            if (record != null)
+            try
             {
-                _ctx.HarvestRecords.Remove(record);
-                await _ctx.SaveChangesAsync();
+                var record = await _ctx.HarvestRecords.FindAsync(id);
+                if (record != null)
+                {
+                    _ctx.HarvestRecords.Remove(record);
+                    await _ctx.SaveChangesAsync();
+                }
+                TempData["SuccessMsg"] = "Harvest record removed successfully!";
             }
-
-            TempData["SuccessMsg"] = "Harvest record removed successfully!";
+            catch (DbUpdateException)
+            {
+                TempData["ErrorMsg"] = "Unable to delete this harvest record.";
+            }
             return RedirectToAction(nameof(Index));
         }
 

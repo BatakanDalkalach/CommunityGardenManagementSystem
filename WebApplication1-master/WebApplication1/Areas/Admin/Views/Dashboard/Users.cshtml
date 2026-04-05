@@ -3,7 +3,6 @@
 @{
     ViewData["Title"] = "System Users";
     var userRoles = ViewBag.UserRoles as Dictionary<string, IList<string>>;
-    var currentUserId = UserManager?.GetUserId(User) ?? string.Empty;
 }
 
 @if (TempData["Success"] != null)

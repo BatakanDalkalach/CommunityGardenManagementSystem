@@ -57,11 +57,19 @@ namespace WebApplication1.Controllers
                 return View(request);
             }
 
-            _ctx.MaintenanceRequests.Add(request);
-            await _ctx.SaveChangesAsync();
-
-            TempData["SuccessMsg"] = "Maintenance request submitted successfully!";
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                _ctx.MaintenanceRequests.Add(request);
+                await _ctx.SaveChangesAsync();
+                TempData["SuccessMsg"] = "Maintenance request submitted successfully!";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (DbUpdateException)
+            {
+                ModelState.AddModelError(string.Empty, "Unable to submit the request. Please try again.");
+                LoadPlotOptions(request.PlotId);
+                return View(request);
+            }
         }
 
         [Authorize]
@@ -120,14 +128,20 @@ namespace WebApplication1.Controllers
         [HttpPost, ActionName("Delete"), ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var request = await _ctx.MaintenanceRequests.FindAsync(id);
-            if (request != null)
+            try
             {
-                _ctx.MaintenanceRequests.Remove(request);
-                await _ctx.SaveChangesAsync();
+                var request = await _ctx.MaintenanceRequests.FindAsync(id);
+                if (request != null)
+                {
+                    _ctx.MaintenanceRequests.Remove(request);
+                    await _ctx.SaveChangesAsync();
+                }
+                TempData["SuccessMsg"] = "Maintenance request removed successfully!";
             }
-
-            TempData["SuccessMsg"] = "Maintenance request removed successfully!";
+            catch (DbUpdateException)
+            {
+                TempData["ErrorMsg"] = "Unable to delete this maintenance request.";
+            }
             return RedirectToAction(nameof(Index));
         }
 
