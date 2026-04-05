@@ -1,0 +1,281 @@
+@model WebApplication1.Models.MemberStatisticsViewModel
+@{
+    ViewData["Title"] = "Member Statistics";
+    ViewData["MetaDescription"] = "Aggregate statistics for Community Garden members: tier breakdown, experience, organic preferences and plot assignments.";
+
+    var tierLabels = System.Text.Json.JsonSerializer.Serialize(Model.MembersByTier.Keys.ToList());
+    var tierCounts = System.Text.Json.JsonSerializer.Serialize(Model.MembersByTier.Values.ToList());
+
+    double organicPct  = Model.TotalMembers > 0 ? Math.Round((double)Model.OrganicCount / Model.TotalMembers * 100, 1) : 0;
+    double plotPct     = Model.TotalMembers > 0 ? Math.Round((double)Model.MembersWithPlots / Model.TotalMembers * 100, 1) : 0;
+}
+
+<article class="cgms-mstats-wrapper">
+    <style>
+        .cgms-mstats-wrapper { background: linear-gradient(180deg, #ede9fe, #fff); padding: 3rem 1rem; min-height: 100vh; }
+        .cgms-mstats-masthead { background: linear-gradient(120deg, #7c3aed, #06b6d4); padding: 2.5rem 3rem; border-radius: 1rem; color: white; margin-bottom: 2rem; }
+        .cgms-mstats-masthead h1 { font-size: 2.5rem; font-weight: 900; margin: 0 0 0.4rem 0; }
+        .cgms-mstats-masthead p { margin: 0; opacity: 0.9; font-size: 1.1rem; }
+
+        /* KPI grid */
+        .cgms-kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 1.4rem; margin-bottom: 2.5rem; }
+        .cgms-kpi-card { background: white; border-radius: 1rem; padding: 1.6rem 1.8rem; box-shadow: 0 4px 14px rgba(0,0,0,0.08); display: flex; flex-direction: column; gap: 0.5rem; }
+        .cgms-kpi-icon { font-size: 2rem; line-height: 1; }
+        .cgms-kpi-value { font-size: 2.2rem; font-weight: 900; line-height: 1.1; }
+        .cgms-kpi-label { font-size: 0.95rem; color: #6b7280; font-weight: 600; }
+        .cgms-kpi-card.total    .cgms-kpi-value { color: #7c3aed; }
+        .cgms-kpi-card.exp      .cgms-kpi-value { color: #d97706; }
+        .cgms-kpi-card.organic  .cgms-kpi-value { color: #059669; }
+        .cgms-kpi-card.noorganic .cgms-kpi-value { color: #dc2626; }
+        .cgms-kpi-card.plots    .cgms-kpi-value { color: #0284c7; }
+        .cgms-kpi-card.noplots  .cgms-kpi-value { color: #6b7280; }
+
+        /* Charts row */
+        .cgms-charts-row { display: grid; grid-template-columns: 2fr 1fr; gap: 1.6rem; margin-bottom: 2.5rem; }
+        .cgms-chart-card { background: white; border-radius: 1rem; padding: 1.8rem; box-shadow: 0 4px 14px rgba(0,0,0,0.08); }
+        .cgms-chart-card h2 { font-size: 1.15rem; font-weight: 800; color: #1f2937; margin-bottom: 1.2rem; }
+        .chart-container { position: relative; }
+
+        /* Progress bars */
+        .cgms-prog-row { margin-bottom: 1.2rem; }
+        .cgms-prog-label { display: flex; justify-content: space-between; font-size: 0.9rem; font-weight: 700; color: #374151; margin-bottom: 0.4rem; }
+        .cgms-prog-bar { height: 1.1rem; border-radius: 0.6rem; background: #e5e7eb; overflow: hidden; }
+        .cgms-prog-fill { height: 100%; border-radius: 0.6rem; transition: width 0.8s ease; }
+        .cgms-prog-fill.organic  { background: linear-gradient(90deg, #10b981, #059669); }
+        .cgms-prog-fill.plots    { background: linear-gradient(90deg, #06b6d4, #0284c7); }
+
+        /* Tier breakdown table */
+        .cgms-tier-table { width: 100%; border-collapse: collapse; }
+        .cgms-tier-table th { text-align: left; padding: 0.65rem 0.9rem; font-size: 0.88rem; color: #6b7280; font-weight: 700; border-bottom: 2px solid #e5e7eb; }
+        .cgms-tier-table td { padding: 0.7rem 0.9rem; border-bottom: 1px solid #f3f4f6; font-weight: 600; color: #1f2937; }
+        .cgms-tier-badge { display: inline-block; padding: 0.3rem 0.9rem; border-radius: 2rem; font-size: 0.85rem; font-weight: 800; }
+        .cgms-tier-badge.basic    { background: #ede9fe; color: #5b21b6; }
+        .cgms-tier-badge.standard { background: #fef3c7; color: #92400e; }
+        .cgms-tier-badge.premium  { background: #cffafe; color: #0e7490; }
+        .cgms-tier-bar-bg { background: #f3f4f6; border-radius: 0.4rem; height: 0.8rem; overflow: hidden; }
+        .cgms-tier-bar-fill { height: 100%; border-radius: 0.4rem; background: linear-gradient(90deg, #7c3aed, #06b6d4); }
+
+        .back-link { display: inline-flex; align-items: center; gap: 0.5rem; color: #7c3aed; font-weight: 700; text-decoration: none; margin-bottom: 1.5rem; }
+        .back-link:hover { color: #5b21b6; text-decoration: underline; }
+
+        @@media (max-width: 767.98px) {
+            .cgms-mstats-masthead { padding: 1.5rem; }
+            .cgms-mstats-masthead h1 { font-size: 1.7rem; }
+            .cgms-charts-row { grid-template-columns: 1fr; }
+            .cgms-kpi-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @@media (max-width: 479.98px) {
+            .cgms-kpi-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+
+    <div class="container">
+        <a asp-action="Index" class="back-link">&#8592; Back to Members</a>
+
+        <header class="cgms-mstats-masthead">
+            <h1>&#128202; Member Statistics</h1>
+            <p>Aggregate overview of all community garden members</p>
+        </header>
+
+        <!-- KPI Cards -->
+        <div class="cgms-kpi-grid">
+            <div class="cgms-kpi-card total">
+                <span class="cgms-kpi-icon">&#128101;</span>
+                <span class="cgms-kpi-value">@Model.TotalMembers</span>
+                <span class="cgms-kpi-label">Total Members</span>
+            </div>
+            <div class="cgms-kpi-card exp">
+                <span class="cgms-kpi-icon">&#127807;</span>
+                <span class="cgms-kpi-value">@Model.AverageYearsOfExperience <small style="font-size:1rem">yrs</small></span>
+                <span class="cgms-kpi-label">Avg Experience</span>
+            </div>
+            <div class="cgms-kpi-card organic">
+                <span class="cgms-kpi-icon">&#9752;</span>
+                <span class="cgms-kpi-value">@Model.OrganicCount</span>
+                <span class="cgms-kpi-label">Organic Growers</span>
+            </div>
+            <div class="cgms-kpi-card noorganic">
+                <span class="cgms-kpi-icon">&#128683;</span>
+                <span class="cgms-kpi-value">@Model.NonOrganicCount</span>
+                <span class="cgms-kpi-label">Non-Organic</span>
+            </div>
+            <div class="cgms-kpi-card plots">
+                <span class="cgms-kpi-icon">&#128205;</span>
+                <span class="cgms-kpi-value">@Model.MembersWithPlots</span>
+                <span class="cgms-kpi-label">Have Plots</span>
+            </div>
+            <div class="cgms-kpi-card noplots">
+                <span class="cgms-kpi-icon">&#128683;</span>
+                <span class="cgms-kpi-value">@Model.MembersWithoutPlots</span>
+                <span class="cgms-kpi-label">No Plot Assigned</span>
+            </div>
+        </div>
+
+        <!-- Charts row -->
+        <div class="cgms-charts-row">
+            <!-- Bar chart: members by tier -->
+            <div class="cgms-chart-card">
+                <h2>&#127894; Members by Membership Tier</h2>
+                @if (Model.MembersByTier.Any())
+                {
+                    <div class="chart-container" style="height:280px;">
+                        <canvas id="tierChart"></canvas>
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted text-center mt-4">No member data available.</p>
+                }
+            </div>
+
+            <!-- Doughnut: organic vs non-organic -->
+            <div class="cgms-chart-card">
+                <h2>&#9752; Organic Preference</h2>
+                @if (Model.TotalMembers > 0)
+                {
+                    <div class="chart-container" style="max-width:230px; margin:0 auto;">
+                        <canvas id="organicChart"></canvas>
+                    </div>
+                    <div style="margin-top:1.2rem;">
+                        <div class="cgms-prog-row">
+                            <div class="cgms-prog-label">
+                                <span>&#9752; Organic</span>
+                                <span>@organicPct%</span>
+                            </div>
+                            <div class="cgms-prog-bar">
+                                <div class="cgms-prog-fill organic" style="width:@organicPct%"></div>
+                            </div>
+                        </div>
+                        <div class="cgms-prog-row">
+                            <div class="cgms-prog-label">
+                                <span>&#128205; With Plots</span>
+                                <span>@plotPct%</span>
+                            </div>
+                            <div class="cgms-prog-bar">
+                                <div class="cgms-prog-fill plots" style="width:@plotPct%"></div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted text-center mt-4">No data yet.</p>
+                }
+            </div>
+        </div>
+
+        <!-- Tier breakdown table -->
+        @if (Model.MembersByTier.Any())
+        {
+            <div class="cgms-chart-card" style="margin-bottom:2rem;">
+                <h2>&#128203; Tier Breakdown</h2>
+                <table class="cgms-tier-table">
+                    <thead>
+                        <tr>
+                            <th>Tier</th>
+                            <th>Members</th>
+                            <th>Share</th>
+                            <th style="width:40%"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            int maxTierCount = Model.MembersByTier.Values.Max();
+                        }
+                        @foreach (var entry in Model.MembersByTier.OrderByDescending(kv => kv.Value))
+                        {
+                            double barPct   = maxTierCount > 0 ? Math.Round((double)entry.Value / maxTierCount * 100, 1) : 0;
+                            double sharePct = Model.TotalMembers > 0 ? Math.Round((double)entry.Value / Model.TotalMembers * 100, 1) : 0;
+                            string badgeClass = entry.Key.ToLower() switch
+                            {
+                                "basic"    => "basic",
+                                "standard" => "standard",
+                                "premium"  => "premium",
+                                _          => "basic"
+                            };
+                            <tr>
+                                <td><span class="cgms-tier-badge @badgeClass">@entry.Key</span></td>
+                                <td>@entry.Value</td>
+                                <td>@sharePct%</td>
+                                <td>
+                                    <div class="cgms-tier-bar-bg">
+                                        <div class="cgms-tier-bar-fill" style="width:@barPct%"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</article>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+        (function () {
+            var tierCtx = document.getElementById('tierChart');
+            if (tierCtx) {
+                var labels = @Html.Raw(tierLabels);
+                var counts = @Html.Raw(tierCounts);
+                var palette = { 'Basic': '#8b5cf6', 'Standard': '#f59e0b', 'Premium': '#06b6d4' };
+                var colors = labels.map(function(l) { return palette[l] || '#94a3b8'; });
+                new Chart(tierCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Members',
+                            data: counts,
+                            backgroundColor: colors,
+                            borderRadius: 8,
+                            borderSkipped: false
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { stepSize: 1, font: { weight: 'bold' } },
+                                grid: { color: '#f3f4f6' }
+                            },
+                            x: {
+                                ticks: { font: { weight: 'bold', size: 13 } },
+                                grid: { display: false }
+                            }
+                        }
+                    }
+                });
+            }
+
+            var organicCtx = document.getElementById('organicChart');
+            if (organicCtx) {
+                new Chart(organicCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Organic', 'Non-Organic'],
+                        datasets: [{
+                            data: [@Model.OrganicCount, @Model.NonOrganicCount],
+                            backgroundColor: ['#10b981', '#f43f5e'],
+                            borderWidth: 3,
+                            borderColor: '#fff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { position: 'bottom', labels: { font: { weight: 'bold' } } }
+                        },
+                        cutout: '60%'
+                    }
+                });
+            }
+        })();
+    </script>
+}

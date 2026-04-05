@@ -65,6 +65,36 @@ namespace WebApplication1.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        public async Task<IActionResult> Statistics()
+        {
+            var all = await _svc.RetrieveAllMembersAsync();
+
+            var byTier = all
+                .GroupBy(m => m.MembershipTier)
+                .ToDictionary(g => g.Key, g => g.Count());
+
+            var vm = new MemberStatisticsViewModel
+            {
+                TotalMembers = all.Count,
+                AverageYearsOfExperience = all.Count > 0
+                    ? Math.Round(all.Average(m => m.YearsOfExperience), 1)
+                    : 0,
+                OrganicCount = all.Count(m => m.PreferOrganicOnly),
+                NonOrganicCount = all.Count(m => !m.PreferOrganicOnly),
+                MembersWithPlots = all.Count(m => m.ManagedPlots != null && m.ManagedPlots.Any()),
+                MembersWithoutPlots = all.Count(m => m.ManagedPlots == null || !m.ManagedPlots.Any()),
+                MembersByTier = byTier,
+                MostCommonTier = byTier.Count > 0
+                    ? byTier.OrderByDescending(kv => kv.Value).First().Key
+                    : "N/A",
+                NewestMemberYear = all.Count > 0
+                    ? all.Max(m => m.RegistrationDate.Year)
+                    : DateTime.Today.Year
+            };
+
+            return View(vm);
+        }
+
         [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
