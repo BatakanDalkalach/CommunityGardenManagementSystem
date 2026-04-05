@@ -24,14 +24,22 @@
         .cgms-btn { padding: 1rem; text-align: center; border-radius: 0.7rem; font-weight: 800; font-size: 1rem; cursor: pointer; text-decoration: none; display: block; }
         .cgms-btn-cancel { background: #9ca3af; color: white; }
         .cgms-btn-cancel:hover { background: #6b7280; color: white; }
-        .cgms-btn-submit { background: #b45309; color: white; border: none; }
-        .cgms-btn-submit:hover { background: #92400e; }
+        .cgms-btn-submit { background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; }
+        .cgms-btn-submit:hover { background: linear-gradient(135deg, #059669, #047857); }
         .cgms-input-field.input-validation-error { border-color: #dc3545 !important; }
         .cgms-input-field.input-validation-error:focus { box-shadow: 0 0 0 3px rgba(220,53,69,0.15) !important; }
         .field-validation-error { color: #dc3545; font-size: 0.875rem; margin-top: 0.3rem; display: block; }
     </style>
 
     <div class="container">
+        <nav aria-label="breadcrumb" class="cgms-breadcrumb-nav">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">🏠 Home</a></li>
+                <li class="breadcrumb-item"><a asp-controller="HarvestRecords" asp-action="Index">Harvests</a></li>
+                <li class="breadcrumb-item"><a asp-controller="HarvestRecords" asp-action="Details" asp-route-id="@Model.RecordId">@Model.CropName (#@Model.RecordId)</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Edit</li>
+            </ol>
+        </nav>
         <div class="cgms-form-card">
             <header class="cgms-form-header">
                 <div class="cgms-form-icon">✏️</div>

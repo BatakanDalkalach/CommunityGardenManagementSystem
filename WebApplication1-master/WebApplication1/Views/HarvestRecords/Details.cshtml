@@ -25,9 +25,22 @@
         .organic-chip { display: inline-block; background: #dcfce7; color: #15803d; border: 1px solid #86efac; padding: 0.3rem 0.85rem; border-radius: 2rem; font-weight: 700; font-size: 0.88rem; }
         .quality-stars { color: #f59e0b; font-size: 1.4rem; letter-spacing: 1px; }
         .cgms-action-bar { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 2rem; padding-top: 1.5rem; border-top: 2px solid #e5e7eb; }
+        .cgms-action-back { display:inline-block; padding:0.75rem 1.4rem; border-radius:0.7rem; font-weight:700; text-decoration:none; background:#6b7280; color:white; }
+        .cgms-action-back:hover { background:#4b5563; color:white; }
+        .cgms-action-edit { display:inline-block; padding:0.75rem 1.4rem; border-radius:0.7rem; font-weight:700; text-decoration:none; background:linear-gradient(135deg,#f59e0b,#d97706); color:#78350f; }
+        .cgms-action-edit:hover { background:linear-gradient(135deg,#d97706,#b45309); color:white; }
+        .cgms-action-delete { display:inline-block; padding:0.75rem 1.4rem; border-radius:0.7rem; font-weight:700; text-decoration:none; background:#ef4444; color:white; margin-left:auto; }
+        .cgms-action-delete:hover { background:#dc2626; color:white; }
     </style>
 
     <div class="container">
+        <nav aria-label="breadcrumb" class="cgms-breadcrumb-nav">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">🏠 Home</a></li>
+                <li class="breadcrumb-item"><a asp-controller="HarvestRecords" asp-action="Index">Harvests</a></li>
+                <li class="breadcrumb-item active" aria-current="page">@Model.CropName (#@Model.RecordId)</li>
+            </ol>
+        </nav>
         <div class="cgms-detail-card">
             <header class="cgms-detail-header">
                 <div class="cgms-detail-icon">🌾</div>
@@ -88,11 +101,11 @@
                 }
 
                 <div class="cgms-action-bar">
-                    <a asp-action="Index" class="btn btn-outline-secondary">← Back to List</a>
+                    <a asp-action="Index" class="cgms-action-back">← Back to List</a>
                     @if (User.Identity!.IsAuthenticated)
                     {
-                        <a asp-action="Edit" asp-route-id="@Model.RecordId" class="btn btn-warning">Edit Record</a>
-                        <a asp-action="Delete" asp-route-id="@Model.RecordId" class="btn btn-outline-danger ms-auto">Delete</a>
+                        <a asp-action="Edit" asp-route-id="@Model.RecordId" class="cgms-action-edit">✏️ Edit Record</a>
+                        <a asp-action="Delete" asp-route-id="@Model.RecordId" class="cgms-action-delete">🗑️ Delete</a>
                     }
                 </div>
             </div>

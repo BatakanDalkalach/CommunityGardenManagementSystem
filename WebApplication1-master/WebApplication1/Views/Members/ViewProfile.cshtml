@@ -44,6 +44,13 @@
     </style>
 
     <div class="container">
+        <nav aria-label="breadcrumb" class="cgms-breadcrumb-nav">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">🏠 Home</a></li>
+                <li class="breadcrumb-item"><a asp-controller="Members" asp-action="Index">Members</a></li>
+                <li class="breadcrumb-item active" aria-current="page">@Model.FullLegalName</li>
+            </ol>
+        </nav>
         @if (TempData["WelcomeMsg"] != null)
         {
             <div class="alert alert-success alert-dismissible fade show mb-3">
@@ -171,7 +178,7 @@
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-top:3rem;">
                     <a asp-action="Index" class="cgms-back-btn" style="margin-top:0;">← Return to Members</a>
                     <a asp-action="Edit" asp-route-id="@Model.MemberId"
-                       style="display:block;padding:1.3rem;background:linear-gradient(to right,#7c3aed,#6d28d9);color:white;text-align:center;border-radius:1rem;text-decoration:none;font-weight:900;font-size:1.2rem;">✏️ Edit Profile</a>
+                       style="display:block;padding:1.3rem;background:linear-gradient(135deg,#f59e0b,#d97706);color:#78350f;text-align:center;border-radius:1rem;text-decoration:none;font-weight:900;font-size:1.2rem;">✏️ Edit Profile</a>
                 </div>
             </div>
         </div>

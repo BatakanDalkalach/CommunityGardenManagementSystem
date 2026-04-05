@@ -39,15 +39,21 @@
             </div>
             <div id="availability-stats" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;text-align:center;">
                 <div style="background:#f0fdf4;padding:1.2rem;border-radius:0.8rem;">
-                    <div id="stat-available" style="font-size:2.5rem;font-weight:900;color:#10b981;">—</div>
+                    <div id="stat-available" style="font-size:2.5rem;font-weight:900;color:#10b981;display:flex;align-items:center;justify-content:center;min-height:3rem;">
+                        <span class="spinner-border spinner-border-sm text-success" role="status"><span class="visually-hidden">Loading...</span></span>
+                    </div>
                     <div style="color:#6b7280;font-size:0.9rem;font-weight:600;">Available</div>
                 </div>
                 <div style="background:#fff7ed;padding:1.2rem;border-radius:0.8rem;">
-                    <div id="stat-occupied" style="font-size:2.5rem;font-weight:900;color:#f97316;">—</div>
+                    <div id="stat-occupied" style="font-size:2.5rem;font-weight:900;color:#f97316;display:flex;align-items:center;justify-content:center;min-height:3rem;">
+                        <span class="spinner-border spinner-border-sm text-warning" role="status"><span class="visually-hidden">Loading...</span></span>
+                    </div>
                     <div style="color:#6b7280;font-size:0.9rem;font-weight:600;">Occupied</div>
                 </div>
                 <div style="background:#eff6ff;padding:1.2rem;border-radius:0.8rem;">
-                    <div id="stat-total" style="font-size:2.5rem;font-weight:900;color:#3b82f6;">—</div>
+                    <div id="stat-total" style="font-size:2.5rem;font-weight:900;color:#3b82f6;display:flex;align-items:center;justify-content:center;min-height:3rem;">
+                        <span class="spinner-border spinner-border-sm text-primary" role="status"><span class="visually-hidden">Loading...</span></span>
+                    </div>
                     <div style="color:#6b7280;font-size:0.9rem;font-weight:600;">Total</div>
                 </div>
             </div>
@@ -69,7 +75,9 @@
             </div>
             <div id="harvests-container">
                 <div id="harvests-loading" style="text-align:center;padding:2rem;color:#6b7280;">
-                    <div style="font-size:2rem;margin-bottom:0.5rem;">⏳</div>
+                    <div class="spinner-border text-success mb-2" role="status" style="width:2.5rem;height:2.5rem;">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
                     <p style="margin:0;">Loading harvest records...</p>
                 </div>
                 <div id="harvests-error" style="display:none;text-align:center;padding:2rem;color:#ef4444;">
@@ -139,7 +147,7 @@
         const list = document.getElementById('harvests-list');
 
         btn.disabled = true;
-        btn.textContent = '⏳ Loading...';
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Loading...';
         loading.style.display = 'block';
         error.style.display = 'none';
         list.style.display = 'none';
@@ -165,7 +173,7 @@
             })
             .finally(function () {
                 btn.disabled = false;
-                btn.textContent = '↻ Refresh';
+                btn.innerHTML = '↻ Refresh';
             });
     }
 

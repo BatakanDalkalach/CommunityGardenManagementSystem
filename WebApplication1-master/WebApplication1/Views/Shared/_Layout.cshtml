@@ -106,11 +106,35 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer class="cgms-footer">
         <div class="container">
-            &copy; 2026 - Community Garden Management System &mdash;
-            <a asp-area="" asp-controller="Home" asp-action="About">About</a> |
-            <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            <div class="cgms-footer-grid">
+                <div class="cgms-footer-col">
+                    <div class="cgms-footer-logo">🌿 Garden CGMS</div>
+                    <p class="cgms-footer-tagline">Growing community, cultivating connections.<br />Manage plots, members, and harvests in one place.</p>
+                </div>
+                <div class="cgms-footer-col">
+                    <div class="cgms-footer-nav-title">Navigate</div>
+                    <ul>
+                        <li><a asp-area="" asp-controller="Home" asp-action="Index">Dashboard</a></li>
+                        <li><a asp-area="" asp-controller="Plots" asp-action="Index">Garden Plots</a></li>
+                        <li><a asp-area="" asp-controller="Members" asp-action="Index">Members</a></li>
+                        <li><a asp-area="" asp-controller="HarvestRecords" asp-action="Index">Harvests</a></li>
+                        <li><a asp-area="" asp-controller="Announcements" asp-action="Index">Announcements</a></li>
+                    </ul>
+                </div>
+                <div class="cgms-footer-col">
+                    <div class="cgms-footer-nav-title">Info</div>
+                    <ul>
+                        <li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
+                        <li><a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="cgms-footer-bottom">
+                <span>&copy; 2026 Community Garden Management System</span>
+                <span>🌱 Made with care for the community</span>
+            </div>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

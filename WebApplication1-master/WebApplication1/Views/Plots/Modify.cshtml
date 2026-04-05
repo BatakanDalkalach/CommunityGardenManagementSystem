@@ -34,6 +34,14 @@
     </style>
 
     <div class="container">
+        <nav aria-label="breadcrumb" class="cgms-breadcrumb-nav">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">🏠 Home</a></li>
+                <li class="breadcrumb-item"><a asp-controller="Plots" asp-action="Index">Plots</a></li>
+                <li class="breadcrumb-item"><a asp-controller="Plots" asp-action="ViewDetails" asp-route-id="@Model.PlotIdentifier">@Model.PlotDesignation</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Edit</li>
+            </ol>
+        </nav>
         <div class="cgms-edit-card">
             <header class="cgms-edit-topbar">
                 <div>

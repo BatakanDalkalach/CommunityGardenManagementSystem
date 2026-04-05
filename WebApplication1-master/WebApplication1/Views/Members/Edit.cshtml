@@ -5,7 +5,7 @@
 
 <article class="cgms-register-page">
     <style>
-        .cgms-register-page { background: linear-gradient(to bottom right, #7c3aed, #6d28d9); padding: 3rem 1rem; min-height: 100vh; }
+        .cgms-register-page { background: linear-gradient(to bottom right, #ede9fe, #f5f3ff); padding: 3rem 1rem; min-height: 100vh; }
         .cgms-register-card { max-width: 780px; margin: 0 auto; background: white; border-radius: 1.5rem; overflow: hidden; box-shadow: 0 25px 70px rgba(0,0,0,0.25); }
         .cgms-register-top { background: linear-gradient(to right, #7c3aed, #6d28d9); padding: 3rem; text-align: center; color: white; }
         .cgms-register-icon { font-size: 4.5rem; margin-bottom: 1rem; }
@@ -31,8 +31,8 @@
         .cgms-submit-btn { padding: 1.3rem; text-align: center; border-radius: 1rem; font-weight: 900; font-size: 1.15rem; cursor: pointer; }
         .cgms-submit-cancel { background: #6b7280; color: white; text-decoration: none; }
         .cgms-submit-cancel:hover { background: #4b5563; color: white; }
-        .cgms-submit-save { background: linear-gradient(to right, #7c3aed, #6d28d9); color: white; border: none; }
-        .cgms-submit-save:hover { background: linear-gradient(to right, #6d28d9, #5b21b6); }
+        .cgms-submit-save { background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; }
+        .cgms-submit-save:hover { background: linear-gradient(135deg, #059669, #047857); }
         .cgms-field-input.input-validation-error { border-color: #dc3545 !important; }
         .cgms-field-input.input-validation-error:focus { box-shadow: 0 0 0 4px rgba(220,53,69,0.15) !important; }
         .cgms-textarea.input-validation-error { border-color: #dc3545 !important; }
@@ -40,6 +40,14 @@
     </style>
 
     <div class="container">
+        <nav aria-label="breadcrumb" class="cgms-breadcrumb-nav">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">🏠 Home</a></li>
+                <li class="breadcrumb-item"><a asp-controller="Members" asp-action="Index">Members</a></li>
+                <li class="breadcrumb-item"><a asp-controller="Members" asp-action="ViewProfile" asp-route-id="@Model.MemberId">@Model.FullLegalName</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Edit</li>
+            </ol>
+        </nav>
         <div class="cgms-register-card">
             <header class="cgms-register-top">
                 <div class="cgms-register-icon">✏️</div>

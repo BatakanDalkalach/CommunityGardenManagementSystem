@@ -43,6 +43,13 @@
     </style>
 
     <div class="container">
+        <nav aria-label="breadcrumb" class="cgms-breadcrumb-nav">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">🏠 Home</a></li>
+                <li class="breadcrumb-item"><a asp-controller="Plots" asp-action="Index">Plots</a></li>
+                <li class="breadcrumb-item active" aria-current="page">@Model.PlotDesignation</li>
+            </ol>
+        </nav>
         <div class="cgms-detail-card">
             <header class="cgms-detail-masthead">
                 <div class="cgms-detail-code">@Model.PlotDesignation</div>
