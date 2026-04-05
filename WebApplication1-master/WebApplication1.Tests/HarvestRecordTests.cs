@@ -339,4 +339,109 @@ public class HarvestRecordTests : IDisposable
 
         Assert.Null(exception);
     }
+
+    // -------------------------------------------------------------------------
+    // Filter by organic certification
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task FilterByOrganic_ReturnsOnlyOrganicRecords()
+    {
+        // Seed data: Record 1 (Cherry Tomatoes) is organic, Record 2 (Carrots) is not
+        var records = await _db.HarvestRecords
+            .Where(h => h.IsOrganicCertified)
+            .ToListAsync();
+
+        Assert.All(records, r => Assert.True(r.IsOrganicCertified));
+    }
+
+    [Fact]
+    public async Task FilterByOrganic_ExcludesNonOrganicRecords()
+    {
+        var records = await _db.HarvestRecords
+            .Where(h => h.IsOrganicCertified)
+            .ToListAsync();
+
+        Assert.DoesNotContain(records, r => !r.IsOrganicCertified);
+    }
+
+    [Fact]
+    public async Task FilterByOrganic_ReturnsSeededOrganicRecord()
+    {
+        var records = await _db.HarvestRecords
+            .Where(h => h.IsOrganicCertified)
+            .ToListAsync();
+
+        Assert.Single(records);
+        Assert.Equal("Cherry Tomatoes", records[0].CropName);
+    }
+
+    [Fact]
+    public async Task FilterByOrganic_AfterAddingOrganicRecord_IncludesNewRecord()
+    {
+        _db.HarvestRecords.Add(new HarvestRecord
+        {
+            PlotIdentifier = 2,
+            MemberId = 2,
+            CropName = "Kale",
+            QuantityKilograms = 3.0,
+            CollectionDate = new DateTime(2024, 9, 5),
+            QualityScore = 5,
+            IsOrganicCertified = true
+        });
+        await _db.SaveChangesAsync();
+
+        var organicRecords = await _db.HarvestRecords
+            .Where(h => h.IsOrganicCertified)
+            .ToListAsync();
+
+        Assert.Equal(2, organicRecords.Count);
+        Assert.Contains(organicRecords, r => r.CropName == "Kale");
+    }
+
+    [Fact]
+    public async Task FilterByCropName_PartialMatch_ReturnsMatches()
+    {
+        // SQLite LIKE (used by EF Core Contains) is case-insensitive for ASCII
+        var records = await _db.HarvestRecords
+            .Where(h => h.CropName.Contains("Tomato"))
+            .ToListAsync();
+
+        Assert.Single(records);
+        Assert.Equal("Cherry Tomatoes", records[0].CropName);
+    }
+
+    [Fact]
+    public async Task FilterByCropName_WithNonMatchingTerm_ReturnsEmpty()
+    {
+        var records = await _db.HarvestRecords
+            .Where(h => h.CropName.Contains("Sunflower"))
+            .ToListAsync();
+
+        Assert.Empty(records);
+    }
+
+    [Fact]
+    public async Task FilterByCropNameAndOrganic_Combined_ReturnsCorrectSubset()
+    {
+        _db.HarvestRecords.Add(new HarvestRecord
+        {
+            PlotIdentifier = 1,
+            MemberId = 1,
+            CropName = "Tomato",
+            QuantityKilograms = 4.0,
+            CollectionDate = new DateTime(2024, 8, 10),
+            QualityScore = 4,
+            IsOrganicCertified = false
+        });
+        await _db.SaveChangesAsync();
+
+        var records = await _db.HarvestRecords
+            .Where(h => h.CropName.Contains("Tomato") && h.IsOrganicCertified)
+            .ToListAsync();
+
+        // Only the seeded "Cherry Tomatoes" (organic) should match, not the new non-organic "Tomato"
+        Assert.Single(records);
+        Assert.Equal("Cherry Tomatoes", records[0].CropName);
+    }
 }

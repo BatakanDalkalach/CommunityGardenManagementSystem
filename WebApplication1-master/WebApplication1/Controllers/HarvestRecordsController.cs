@@ -17,7 +17,7 @@ namespace WebApplication1.Controllers
         }
 
         // GET: /HarvestRecords
-        public async Task<IActionResult> Index(string? crop = null, int page = 1)
+        public async Task<IActionResult> Index(string? crop = null, bool organicOnly = false, int page = 1)
         {
             const int pageSize = 8;
 
@@ -28,6 +28,9 @@ namespace WebApplication1.Controllers
 
             if (!string.IsNullOrWhiteSpace(crop))
                 query = query.Where(h => h.CropName.Contains(crop));
+
+            if (organicOnly)
+                query = query.Where(h => h.IsOrganicCertified);
 
             var allRecords = await query.OrderByDescending(h => h.CollectionDate).ToListAsync();
 
@@ -40,6 +43,7 @@ namespace WebApplication1.Controllers
             ViewBag.CurrentPage = page;
             ViewBag.TotalPages = totalPages;
             ViewBag.CropFilter = crop;
+            ViewBag.OrganicOnly = organicOnly;
 
             return View(allRecords.Skip((page - 1) * pageSize).Take(pageSize).ToList());
         }

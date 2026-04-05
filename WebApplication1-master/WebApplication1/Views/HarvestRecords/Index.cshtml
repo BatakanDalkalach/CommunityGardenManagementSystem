@@ -3,6 +3,7 @@
     ViewData["Title"] = "Harvest Records";
     int currentPage = ViewBag.CurrentPage;
     int totalPages = ViewBag.TotalPages;
+    bool organicOnly = ViewBag.OrganicOnly ?? false;
 }
 
 <article class="cgms-list-container">
@@ -55,10 +56,14 @@
                         <label class="form-label fw-semibold mb-1 d-block" style="font-size:0.88rem;">Crop Name</label>
                         <input type="text" name="crop" value="@ViewBag.CropFilter" class="form-control form-control-sm" placeholder="e.g. Tomato" style="width:200px;" />
                     </div>
-                    <button type="submit" class="btn btn-sm btn-success">Filter</button>
-                    @if (!string.IsNullOrEmpty(ViewBag.CropFilter as string))
+                    <div class="d-flex align-items-center gap-2" style="padding-top:1.5rem;">
+                        <input type="checkbox" name="organicOnly" id="organicOnly" value="true" class="form-check-input mt-0" @(organicOnly ? "checked" : "") />
+                        <label for="organicOnly" class="form-check-label fw-semibold" style="font-size:0.88rem; white-space:nowrap;">Organic only</label>
+                    </div>
+                    <button type="submit" class="btn btn-sm btn-success" style="margin-top:1.5rem;">Filter</button>
+                    @if (!string.IsNullOrEmpty(ViewBag.CropFilter as string) || organicOnly)
                     {
-                        <a asp-action="Index" class="btn btn-sm btn-outline-secondary">Clear</a>
+                        <a asp-action="Index" class="btn btn-sm btn-outline-secondary" style="margin-top:1.5rem;">Clear</a>
                     }
                     <div class="ms-auto">
                         @if (User.Identity!.IsAuthenticated)
@@ -124,14 +129,14 @@
                 @if (totalPages > 1)
                 {
                     <nav class="pagination-bar">
-                        <a asp-action="Index" asp-route-page="@(currentPage - 1)" asp-route-crop="@ViewBag.CropFilter"
+                        <a asp-action="Index" asp-route-page="@(currentPage - 1)" asp-route-crop="@ViewBag.CropFilter" asp-route-organicOnly="@organicOnly"
                            class="page-btn @(currentPage == 1 ? "disabled" : "")">&#8249;</a>
                         @for (int p = 1; p <= totalPages; p++)
                         {
-                            <a asp-action="Index" asp-route-page="@p" asp-route-crop="@ViewBag.CropFilter"
+                            <a asp-action="Index" asp-route-page="@p" asp-route-crop="@ViewBag.CropFilter" asp-route-organicOnly="@organicOnly"
                                class="page-btn @(p == currentPage ? "active" : "")">@p</a>
                         }
-                        <a asp-action="Index" asp-route-page="@(currentPage + 1)" asp-route-crop="@ViewBag.CropFilter"
+                        <a asp-action="Index" asp-route-page="@(currentPage + 1)" asp-route-crop="@ViewBag.CropFilter" asp-route-organicOnly="@organicOnly"
                            class="page-btn @(currentPage == totalPages ? "disabled" : "")">&#8250;</a>
                     </nav>
                 }
