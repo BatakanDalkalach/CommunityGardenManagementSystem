@@ -1,6 +1,14 @@
+@using WebApplication1.Models
 @{
     ViewData["Title"] = "Dashboard";
     ViewData["MetaDescription"] = "Community Garden Management System dashboard – view plot availability, latest harvest records, and quick-access links for garden management.";
+
+    int totalPlots = ViewBag.TotalPlots ?? 0;
+    int availablePlots = ViewBag.AvailablePlots ?? 0;
+    int occupiedPlots = ViewBag.OccupiedPlots ?? 0;
+    double availablePct = totalPlots > 0 ? (double)availablePlots / totalPlots * 100 : 0;
+
+    var latestHarvests = (ViewBag.LatestHarvests as IEnumerable<HarvestRecord>) ?? Enumerable.Empty<HarvestRecord>();
 }
 
 @section Head {
@@ -28,64 +36,69 @@
             </a>
         </div>
 
-        <!-- Real-time Plot Availability Counter -->
-        <div id="plot-availability-card" style="background:white;padding:2rem;border-radius:1.2rem;box-shadow:0 4px 16px rgba(0,0,0,0.08);margin-bottom:2rem;">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;">
+        <!-- Plot Availability -->
+        <div style="background:white;padding:2rem;border-radius:1.2rem;box-shadow:0 4px 16px rgba(0,0,0,0.08);margin-bottom:2rem;">
+            <div style="margin-bottom:1.2rem;">
                 <h3 style="font-size:1.5rem;font-weight:800;color:#111827;margin:0;">📊 Plot Availability</h3>
-                <div style="display:flex;align-items:center;gap:0.5rem;">
-                    <span id="availability-last-updated" style="font-size:0.8rem;color:#9ca3af;"></span>
-                    <span id="availability-pulse" style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#10b981;"></span>
-                </div>
             </div>
-            <div id="availability-stats" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;text-align:center;">
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;text-align:center;">
                 <div style="background:#f0fdf4;padding:1.2rem;border-radius:0.8rem;">
-                    <div id="stat-available" style="font-size:2.5rem;font-weight:900;color:#10b981;display:flex;align-items:center;justify-content:center;min-height:3rem;">
-                        <span class="spinner-border spinner-border-sm text-success" role="status"><span class="visually-hidden">Loading...</span></span>
-                    </div>
+                    <div style="font-size:2.5rem;font-weight:900;color:#10b981;">@availablePlots</div>
                     <div style="color:#6b7280;font-size:0.9rem;font-weight:600;">Available</div>
                 </div>
                 <div style="background:#fff7ed;padding:1.2rem;border-radius:0.8rem;">
-                    <div id="stat-occupied" style="font-size:2.5rem;font-weight:900;color:#f97316;display:flex;align-items:center;justify-content:center;min-height:3rem;">
-                        <span class="spinner-border spinner-border-sm text-warning" role="status"><span class="visually-hidden">Loading...</span></span>
-                    </div>
+                    <div style="font-size:2.5rem;font-weight:900;color:#f97316;">@occupiedPlots</div>
                     <div style="color:#6b7280;font-size:0.9rem;font-weight:600;">Occupied</div>
                 </div>
                 <div style="background:#eff6ff;padding:1.2rem;border-radius:0.8rem;">
-                    <div id="stat-total" style="font-size:2.5rem;font-weight:900;color:#3b82f6;display:flex;align-items:center;justify-content:center;min-height:3rem;">
-                        <span class="spinner-border spinner-border-sm text-primary" role="status"><span class="visually-hidden">Loading...</span></span>
-                    </div>
+                    <div style="font-size:2.5rem;font-weight:900;color:#3b82f6;">@totalPlots</div>
                     <div style="color:#6b7280;font-size:0.9rem;font-weight:600;">Total</div>
                 </div>
             </div>
             <div style="margin-top:1rem;">
-                <div id="availability-bar-bg" style="background:#e5e7eb;border-radius:9999px;height:8px;overflow:hidden;">
-                    <div id="availability-bar" style="height:100%;background:linear-gradient(90deg,#10b981,#059669);border-radius:9999px;width:0%;transition:width 0.6s ease;"></div>
+                <div style="background:#e5e7eb;border-radius:9999px;height:8px;overflow:hidden;">
+                    <div style="height:100%;background:linear-gradient(90deg,#10b981,#059669);border-radius:9999px;width:@(availablePct.ToString("F1"))%;"></div>
                 </div>
-                <p style="font-size:0.8rem;color:#9ca3af;margin-top:0.4rem;margin-bottom:0;">Auto-refreshes every 30 seconds</p>
             </div>
         </div>
 
-        <!-- Latest Harvest Records (AJAX) -->
+        <!-- Latest Harvest Records -->
         <div style="background:white;padding:2.5rem;border-radius:1.2rem;box-shadow:0 4px 16px rgba(0,0,0,0.08);margin-bottom:2rem;">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+            <div style="margin-bottom:1.5rem;">
                 <h3 style="font-size:1.8rem;font-weight:800;color:#111827;margin:0;">🌾 Latest Harvest Records</h3>
-                <button id="refresh-harvests-btn" onclick="loadLatestHarvests()" style="background:linear-gradient(135deg,#10b981,#059669);color:white;border:none;padding:0.6rem 1.2rem;border-radius:0.6rem;font-weight:600;cursor:pointer;font-size:0.95rem;">
-                    ↻ Refresh
-                </button>
             </div>
-            <div id="harvests-container">
-                <div id="harvests-loading" style="text-align:center;padding:2rem;color:#6b7280;">
-                    <div class="spinner-border text-success mb-2" role="status" style="width:2.5rem;height:2.5rem;">
-                        <span class="visually-hidden">Loading...</span>
+            @if (!latestHarvests.Any())
+            {
+                <p style="text-align:center;color:#6b7280;padding:1.5rem 0;">No harvest records found.</p>
+            }
+            else
+            {
+                @foreach (var record in latestHarvests)
+                {
+                    <div style="display:flex;align-items:flex-start;justify-content:space-between;padding:1rem 0;border-bottom:1px solid #f3f4f6;flex-wrap:wrap;gap:0.5rem;">
+                        <div>
+                            <div style="font-weight:700;font-size:1.05rem;color:#111827;margin-bottom:0.2rem;">
+                                @record.CropName
+                                @if (record.IsOrganicCertified)
+                                {
+                                    <span style="background:#d1fae5;color:#065f46;font-size:0.75rem;font-weight:700;padding:0.2rem 0.5rem;border-radius:9999px;">🌿 Organic</span>
+                                }
+                            </div>
+                            <div style="font-size:0.875rem;color:#6b7280;">
+                                Plot <strong>@(record.SourcePlot?.PlotDesignation ?? "N/A")</strong> &middot;
+                                @(record.Harvester?.FullLegalName ?? "Unknown") &middot;
+                                @record.CollectionDate.ToString("MMM dd, yyyy")
+                            </div>
+                            <div style="font-size:0.875rem;color:#f59e0b;margin-top:0.2rem;" title="Quality: @record.QualityScore/5">
+                                @(new string('★', record.QualityScore))@(new string('☆', 5 - record.QualityScore))
+                            </div>
+                        </div>
+                        <div style="text-align:right;flex-shrink:0;">
+                            <div style="font-size:1.3rem;font-weight:800;color:#059669;">@record.QuantityKilograms.ToString("F1") kg</div>
+                        </div>
                     </div>
-                    <p style="margin:0;">Loading harvest records...</p>
-                </div>
-                <div id="harvests-error" style="display:none;text-align:center;padding:2rem;color:#ef4444;">
-                    <div style="font-size:2rem;margin-bottom:0.5rem;">⚠️</div>
-                    <p id="harvests-error-msg" style="margin:0;">Failed to load harvest records.</p>
-                </div>
-                <div id="harvests-list" style="display:none;"></div>
-            </div>
+                }
+            }
             <div style="margin-top:1.5rem;text-align:right;">
                 <a asp-controller="HarvestRecords" asp-action="Index" style="color:#059669;font-weight:600;text-decoration:none;font-size:0.95rem;">View all harvest records →</a>
             </div>
@@ -100,120 +113,3 @@
         </div>
     </div>
 </div>
-
-@section Scripts {
-<script>
-    // --- Latest Harvests ---
-
-    function qualityStars(score) {
-        return '★'.repeat(score) + '☆'.repeat(5 - score);
-    }
-
-    function renderHarvestCard(record) {
-        const organic = record.isOrganicCertified
-            ? '<span style="background:#d1fae5;color:#065f46;font-size:0.75rem;font-weight:700;padding:0.2rem 0.5rem;border-radius:9999px;">🌿 Organic</span>'
-            : '';
-        return `
-            <div style="display:flex;align-items:flex-start;justify-content:space-between;padding:1rem 0;border-bottom:1px solid #f3f4f6;flex-wrap:wrap;gap:0.5rem;">
-                <div>
-                    <div style="font-weight:700;font-size:1.05rem;color:#111827;margin-bottom:0.2rem;">
-                        ${escapeHtml(record.cropName)} ${organic}
-                    </div>
-                    <div style="font-size:0.875rem;color:#6b7280;">
-                        Plot <strong>${escapeHtml(record.plotDesignation)}</strong> &middot;
-                        ${escapeHtml(record.harvesterName)} &middot;
-                        ${escapeHtml(record.collectionDate)}
-                    </div>
-                    <div style="font-size:0.875rem;color:#f59e0b;margin-top:0.2rem;" title="Quality: ${record.qualityScore}/5">
-                        ${qualityStars(record.qualityScore)}
-                    </div>
-                </div>
-                <div style="text-align:right;flex-shrink:0;">
-                    <div style="font-size:1.3rem;font-weight:800;color:#059669;">${record.quantityKilograms.toFixed(1)} kg</div>
-                </div>
-            </div>`;
-    }
-
-    function escapeHtml(str) {
-        const div = document.createElement('div');
-        div.appendChild(document.createTextNode(String(str)));
-        return div.innerHTML;
-    }
-
-    function loadLatestHarvests() {
-        const btn = document.getElementById('refresh-harvests-btn');
-        const loading = document.getElementById('harvests-loading');
-        const error = document.getElementById('harvests-error');
-        const list = document.getElementById('harvests-list');
-
-        btn.disabled = true;
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Loading...';
-        loading.style.display = 'block';
-        error.style.display = 'none';
-        list.style.display = 'none';
-
-        fetch('/api/harvest/latest')
-            .then(function (response) {
-                if (!response.ok) throw new Error('HTTP ' + response.status);
-                return response.json();
-            })
-            .then(function (data) {
-                if (data.length === 0) {
-                    list.innerHTML = '<p style="text-align:center;color:#6b7280;padding:1.5rem 0;">No harvest records found.</p>';
-                } else {
-                    list.innerHTML = data.map(renderHarvestCard).join('');
-                }
-                loading.style.display = 'none';
-                list.style.display = 'block';
-            })
-            .catch(function (err) {
-                loading.style.display = 'none';
-                document.getElementById('harvests-error-msg').textContent = 'Failed to load harvest records: ' + err.message;
-                error.style.display = 'block';
-            })
-            .finally(function () {
-                btn.disabled = false;
-                btn.innerHTML = '↻ Refresh';
-            });
-    }
-
-    // --- Plot Availability (auto-refresh every 30s) ---
-
-    function loadPlotAvailability() {
-        fetch('/api/harvest/plot-availability')
-            .then(function (response) {
-                if (!response.ok) throw new Error('HTTP ' + response.status);
-                return response.json();
-            })
-            .then(function (data) {
-                document.getElementById('stat-available').textContent = data.available;
-                document.getElementById('stat-occupied').textContent = data.occupied;
-                document.getElementById('stat-total').textContent = data.total;
-
-                var pct = data.total > 0 ? (data.available / data.total * 100) : 0;
-                document.getElementById('availability-bar').style.width = pct.toFixed(1) + '%';
-
-                var now = new Date();
-                document.getElementById('availability-last-updated').textContent =
-                    'Updated ' + now.toLocaleTimeString();
-
-                // Pulse animation
-                var pulse = document.getElementById('availability-pulse');
-                pulse.style.background = '#10b981';
-                setTimeout(function () { pulse.style.background = '#d1fae5'; }, 400);
-                setTimeout(function () { pulse.style.background = '#10b981'; }, 800);
-            })
-            .catch(function () {
-                document.getElementById('availability-last-updated').textContent = 'Update failed';
-                document.getElementById('availability-pulse').style.background = '#ef4444';
-            });
-    }
-
-    // Initial load
-    loadLatestHarvests();
-    loadPlotAvailability();
-
-    // Auto-refresh plot availability every 30 seconds
-    setInterval(loadPlotAvailability, 30000);
-</script>
-}
